@@ -1,0 +1,68 @@
+# 百度指数重采 —— 嫁金钗
+#
+# 前置（一次性，都在 GitHub 网页上设）：
+#   1. Settings → Secrets and variables → Actions → New repository secret，名字 BDUSS
+#   2. Settings → Actions → General → Workflow permissions → Read and write
+#   3. 本文件放 .github/workflows/ 下，fetch_baidu_index.mjs 放仓库根
+#      （脚本和 index.html 必须同一个仓库根，跟《伟大的长征》那边一模一样）
+#
+# 看板读的是 index.html 同目录的 ./baidu-index.json，所以下面 BAIDU_OUT 默认就是仓库根。
+# 只有当你把嫁金钗塞进某个子目录（比如和长征共用一个仓库、站点在 /jiajinchai/ 下）时，
+# 才需要把这一行改成 jiajinchai/baidu-index.json —— 改这一处就够，提交步骤用的是同一个变量。
+#
+# cron 是 UTC：02:00–10:00 每个整点 = 北京 10:00–18:00 每小时一次。
+# 百度页面写"每天 12~16 时出昨天的数"，实测会提前，所以多留几个整点；
+# 脚本里"asof 已是昨天就跳过"的判断保证一天只产生 1 次 commit（每次 commit 会触发一次 Pages 重建）。
+# 注意：YAML 的注释只能以 # 开头，写成 /* */ 会让整个文件解析失败、GitHub 直接不认这个 workflow。
+
+name: baidu-index-jiajinchai
+
+on:
+  schedule:
+    - cron: '0 2-10 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: baidu-index-jiajinchai
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BAIDU_OUT: baidu-index.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 装 Playwright + Chromium
+        run: npm i -D playwright && npx playwright install --with-deps chromium
+
+      # 第一次跑先别配 secret，把 BAIDU_PROBE 前面的 # 删掉做一次"机房 IP 探测"：
+      #   PROBE OK                  = 无头浏览器签名被百度接受、Actions 的 IP 干净，再回来配 BDUSS
+      #   PROBE FAIL · status=10018 = 机房 IP 被风控，这条路死，退回人工快照
+      - name: 抓取
+        env:
+          BDUSS: ${{ secrets.BDUSS }}
+          BAIDU_WORD: 嫁金钗
+          BAIDU_DAYS: '90'
+          # BAIDU_PROBE: '1'
+        run: node fetch_baidu_index.mjs
+
+      - name: 提交结果
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          [ -f "$BAIDU_OUT" ] || { echo "::notice::没有产出文件，跳过提交（探测模式或抓取失败）"; exit 0; }
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$BAIDU_OUT"
+          git diff --cached --quiet || git commit -m "嫁金钗百度指数 $(date -u +%F)"
+          git push
