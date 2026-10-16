@@ -1440,7 +1440,9 @@ function tickCountdown() {
   const yk = ykState(now), st = epgState(now);
   const cand = [];
   if (yk.next) cand.push({ at: yk.next.at, label: '距优酷更新' });
-  if (st && st.next) cand.push({ at: st.next.st, label: '距 CCTV 播出' });
+  /* 两集连播，标签必须带上集数：21:29 第1集开播后，下一个正片档是 22:21 的第2集，
+     这时候光写「距 CCTV 播出」看着像第1集还没播。提要不参与倒数（epItem 里 n=0 已被滤掉）。 */
+  if (st && st.next) cand.push({ at: st.next.st, label: `距 CCTV 第${st.next.n}集播出` });
   cand.sort((a, b) => a.at - b.at);
   const el = document.getElementById('countdown');
   if (!cand.length) { el.textContent = yk.n ? '已更完 · 待平台排期' : '--:--:--'; return; }
