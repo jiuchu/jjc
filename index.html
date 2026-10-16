@@ -777,10 +777,10 @@ function recordLive() {
 function liveSeries(dayOffset) {
   const p = 'youku';
   const remote = S.heat[dayOffset === 0 ? 'today' : 'yest'];
-  if (remote && remote.rec.length) return { from: '剧云录', rec: remote.rec };
+  if (remote && remote.rec.length) return { rec: remote.rec };
   const d = new Date(); d.setDate(d.getDate() - dayOffset);
   const loc = liveLocal()[ymd(d)] || [];
-  return { from: '本页自采', rec: loc };
+  return { rec: loc };
 }
 
 /* ============================================================
@@ -1316,8 +1316,8 @@ function renderLiveChart() {
   const today = liveSeries(0), yest = liveSeries(1);
   document.getElementById('liveEmpty').style.display = today.rec.length ? 'none' : 'grid';
   document.getElementById('liveNote').innerHTML = today.rec.length
-    ? `5 分钟一点 · 数据源：${today.from} · 今日 ${today.rec.length} 点` + (yest.rec.length ? ' / 昨日 ' + yest.rec.length + ' 点' : '')
-    : '剧云录建档后自动接入；在此之前由本页按灯塔节拍自采（仅存于本机浏览器）';
+    ? `5 分钟一点 · 今日 ${today.rec.length} 点` + (yest.rec.length ? ' / 昨日 ' + yest.rec.length + ' 点' : '')
+    : '上游建档后自动接入；在此之前由本页按灯塔节拍自采（仅存于本机浏览器）';
   if (!today.rec.length) return;
   const labels = [];
   for (let m = 0; m < 24 * 60; m += 5) labels.push(pad2((m / 60) | 0) + ':' + pad2(m % 60));
