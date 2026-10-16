@@ -456,7 +456,7 @@ const CONFIG = {
     u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
     u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u)
   ],
-  refresh: { dengta: 120e3, ssr: 10 * 60e3, heat: 60e3, douban: 30 * 60e3, kuyun: 5e3, epg: 60e3 },
+  refresh: { dengta: 120e3, live: 1500, ssr: 10 * 60e3, heat: 60e3, douban: 30 * 60e3, kuyun: 5e3, epg: 60e3 },
   donate: 'https://pic.sl.al/gdrive/pic/2025-11-26/fileid_1aPF614Jn4683MxgdV3UiuvN5lKyCLsdE_%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20251125182103_66_269.jpg'
 };
 
@@ -536,7 +536,7 @@ function findKey(node, key, depth = 0) {
 const S = {
   meta: null, hotDaily: [], ssrHot: null, rankRows: [], rankRow: null,
   jy: {}, heat: {}, douban: null, kuyun: null, epg: null, ykRule: '',
-  play: null, ssrPlay: null, vvRows: []
+  play: null, ssrPlay: null, vvRows: [], dengtaLive: false, liveAt: 0, liveErr: ''
 };
 const src = {};
 function mark(name, ok, msg) { src[name] = { ok, msg: msg || '', at: ok ? Date.now() : (src[name]?.at || 0) }; }
@@ -577,21 +577,48 @@ async function loadDengta() {
     const r0 = ((((pr || {}).data || {}).dataList) || [])[0] || {};
     if (r0.playRule && r0.playRule !== S.ykRule) { S.ykRule = r0.playRule; renderMarch(); }
   } catch (e) {}
-  /* 播放量逐日行。platform 必须显式写 ALL：同一分钟传 youku 回 698.3 万、传 ALL 回 387.3 万，
-     而灯塔自己页面那张「灯塔全网正片播放」标题卡用的是 ALL 口径 —— 卡片要跟页面对得上。 */
+  /* 播放量交给 liveLoop() 连续轮询，这里只保证首屏有数 */
+  await applyDengtaLive();
+  mark('灯塔', true);
+  renderKPI(); renderHotChart(); renderRankChart(); renderHonor(); renderDengtaTag();
+  recordLive();
+}
+
+/* 灯塔的 vv.detail.list 是秒级在涨的（实测 35 秒涨 2.8 万），所以播放量这五个卡不能跟着
+   2 分钟一轮的 loadDengta 走 —— 那样数字看着就是"冻住"。单独抽出来给 liveLoop 连续调。
+   platform 必须显式写 ALL：同一分钟传 youku 回 698.3 万、传 ALL 回 387.3 万，而灯塔自己页面
+   那张「灯塔全网正片播放」标题卡用的是 ALL 口径 —— 卡片要跟页面对得上。 */
+async function applyDengtaLive() {
   try {
     const vv = await mtop('mtop.alipictures.gravitywave.media.vv.detail.list',
       { mediaId: CONFIG.mediaId, platform: 'ALL', dateType: 'DAY' });
     const rows = (((vv || {}).data || {}).dataList || [])
       .filter(r => /^\d{8}$/.test(String(r.showDate)));
-    if (rows.length) {
-      S.vvRows = rows.sort((a, b) => String(a.showDate) < String(b.showDate) ? 1 : -1);
-      applyVv(S.vvRows[0]);
-    }
-  } catch (e) {}
-  mark('灯塔', true);
-  renderKPI(); renderHotChart(); renderRankChart(); renderHonor(); renderDengtaTag();
-  recordLive();
+    if (!rows.length) throw new Error('逐日返回空');
+    S.vvRows = rows.sort((a, b) => String(a.showDate) < String(b.showDate) ? 1 : -1);
+    applyVv(S.vvRows[0]);
+    S.dengtaLive = true; S.liveAt = Date.now(); S.liveErr = '';
+  } catch (e) {
+    S.dengtaLive = false; S.liveErr = String(e.message).slice(0, 30);
+  }
+  renderKPI(); renderDengtaTag();
+  return S.dengtaLive;
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* 请求落地 → 歇 dwell → 再发，永远只有一个在飞；失败按 3 倍退避到最长 30 秒。
+   窗口失焦降到 6 秒、标签页切走直接停：代理和《伟大的长征》是同一个 Cloudflare 额度，
+   两个面板都按 1.5 秒开满就是 ~11 万次/天，超了会一起挂。 */
+async function liveLoop() {
+  let dwell = CONFIG.refresh.live;
+  for (;;) {
+    if (document.hidden) { await sleep(1000); continue; }
+    const ok = await applyDengtaLive();
+    stamp();
+    dwell = ok ? (document.hasFocus() ? CONFIG.refresh.live : 6e3) : Math.min(30e3, dwell * 3);
+    await sleep(dwell);
+  }
 }
 
 /* 逐日行只给"当日"这一格的原始整数，灯塔的 vvCntWithUnit 精度只有 0.1 万。
@@ -652,12 +679,16 @@ async function loadSsr(force = false) {
 function renderDengtaTag() {
   const el = document.getElementById('dengtaTag');
   if (!el) return;
-  if (S.rankAt) {
+  const hms = t => t ? new Date(t).toLocaleTimeString('zh-CN', { hour12: false }) : '';
+  if (S.dengtaLive) {
     el.className = 'src-tag live';
-    el.innerHTML = '<i></i>灯塔热度接口 · 榜单更新于 ' + esc((S.rankAt || '').slice(11, 16));
-  } else if (S.ssrHot) {
+    el.title = '播放量连续轮询 · 取数于 ' + hms(S.liveAt) +
+               (S.rankAt ? ' · 榜单更新于 ' + S.rankAt.slice(11, 16) : '');
+    el.innerHTML = '<i></i>灯塔实时接口 · ' + esc(hms(S.liveAt));
+  } else if (S.rankAt || S.ssrHot) {
     el.className = 'src-tag lag';
-    el.innerHTML = '<i></i>灯塔页面快照 · 源站缓存 5 分钟';
+    el.title = '实时接口暂时没取到（' + (S.liveErr || '未知原因') + '），退回灯塔页面快照 · 源站缓存 300 秒';
+    el.innerHTML = '<i></i>灯塔快照 · 延迟约 5 分钟';
   } else el.innerHTML = '';
 }
 
@@ -1454,6 +1485,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') dm.classList
   renderKPI(); renderBaiduChart(); renderHonor();
   loadBaiduIndex();
   await refreshAll();
+  liveLoop();
   every(CONFIG.refresh.dengta, () => safe('灯塔', loadDengta).then(stamp), true);
   every(CONFIG.refresh.ssr,    () => safe('灯塔SSR', () => loadSsr()));
   every(CONFIG.refresh.heat,   () => safe('剧云录', loadHeatAll).then(stamp), true);
