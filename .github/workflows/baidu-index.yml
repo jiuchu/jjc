@@ -11,9 +11,8 @@
 # 才需要把这一行改成 jiajinchai/baidu-index.json —— 改这一处就够，提交步骤用的是同一个变量。
 #
 # cron 是 UTC。百度写"每天 12~16 时出昨天的数"，实测会提前，所以窗口给到
-# 北京 12:10–18:10。脚本开头有"本地 asof 已是昨天就直接退出"的判断
-# （fetch_baidu_index.mjs:51），所以当天抓到一次之后，剩下的每一轮都是十几秒空转：
-# 不启动无头浏览器、不重打百度、不产生 commit、不触发 Pages 重建。
+# 北京 12:10–18:10。抓到一次之后剩下的每一轮由下面那个「要不要跑」步骤挡在装浏览器
+# 之前，十几秒就结束：不开无头浏览器、不重打百度、不产生 commit、不触发 Pages 重建。
 #
 # ⚠ 但这条 schedule 现在是**死的**：GitHub 的定时事件从他这个账号整个停了
 #   （jjc / wddcz / TieBaSign 三个仓库 event=schedule 合计只剩 10-08 以前的记录，
@@ -50,13 +49,32 @@ jobs:
         with:
           node-version: '22'
 
+      # 先花两秒钟问一句"仓库里这份是不是已经是昨天的数了"，是的话下面三步整个跳过。
+      # 判据和 fetch_baidu_index.mjs:51 那句守卫一模一样：asof == 北京时间的昨天。
+      # 这一步存在的唯一理由：装 Chromium 那一步无条件跑的话，每次空转也要 1.5~2 分钟，
+      # 一天十几次下来 Actions 列表全是噪音；挡在安装之前才叫真省。
+      # ⚠ 要用 BAIDU_PROBE 探测模式时，把下面三处 if 临时删掉 —— 探测模式本来就该每轮真跑。
+      - name: 要不要跑
+        id: need
+        run: |
+          want=$(TZ=Asia/Shanghai date -d "yesterday" +%F)
+          have=$(node -p "try{JSON.parse(require('fs').readFileSync('$BAIDU_OUT','utf8')).asof}catch(e){''}")
+          echo "期望 asof=$want  仓库里=$have"
+          if [ -n "$have" ] && [ "$have" = "$want" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: 装 Playwright + Chromium
+        if: steps.need.outputs.skip != 'true'
         run: npm i -D playwright && npx playwright install --with-deps chromium
 
       # 第一次跑先别配 secret，把 BAIDU_PROBE 前面的 # 删掉做一次"机房 IP 探测"：
       #   PROBE OK                  = 无头浏览器签名被百度接受、Actions 的 IP 干净，再回来配 BDUSS
       #   PROBE FAIL · status=10018 = 机房 IP 被风控，这条路死，退回人工快照
       - name: 抓取
+        if: steps.need.outputs.skip != 'true'
         env:
           BDUSS: ${{ secrets.BDUSS }}
           BAIDU_WORD: 嫁金钗
@@ -65,6 +83,7 @@ jobs:
         run: node fetch_baidu_index.mjs
 
       - name: 提交结果
+        if: steps.need.outputs.skip != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
