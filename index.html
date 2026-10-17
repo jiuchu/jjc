@@ -458,9 +458,18 @@ const CONFIG = {
   ],
   /* live/idle 是一对：北京 liveWindow 内按 live 秒级轮，窗口外自动降到 idle。
      Cloudflare 免费额度 10 万请求/天是整个账号共享的，两个面板加所有轮询都算在里面，
-     之前两边全程开秒级，一天烧到 9 万，直接 1027 停摆。 */
-  refresh: { dengta: 120e3, live: 3e3, idle: 15e3, ssr: 10 * 60e3, heat: 60e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3 },
-  liveWindow: [18, 24],             // 北京 18:00 放量 ~ 24:00，其余时段数字慢一点没关系
+     之前两边全程开秒级，一天烧到 9 万，直接 1027 停摆。
+     heatLive/heat 是第二对、dengta 是日榜（10 分钟足够），节拍按下面的实测增速定。 */
+  refresh: { dengta: 600e3, live: 3e3, idle: 15e3, ssr: 10 * 60e3, heatLive: 120e3, heat: 600e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3 },
+  liveWindow: [18, 24],             // 北京电视黄金档那六小时，VV 给到最细；12:00 放量靠 idle=15 秒兜
+  /* 热度快档按窗口给：12–14 是优酷每日放量（10-17 起 12:00 更 2 集），18–24 是电视黄金档
+     带起来的第二段陡升。实测这两段涨 4.2 点/分，120 秒一档滞后 ≤9 点（0.11%）；
+     其余时段只有 0.2 点/分，600 秒差 2 点，慢档足够。 */
+  heatWindows: [[12, 14], [18, 24]],
+  /* 灯塔 SSR 的 playTime 落后于优酷真实放量：第 5、6 集 uploadDate 是 2026-10-17 12:00:01，
+     灯塔那边还写着 18:00，拿它做更新倒计时会整天差 6 小时。这里覆盖掉，
+     置 null 就退回采信灯塔字段。 */
+  ykPlayTime: '12:00',
   donate: 'https://pic.sl.al/gdrive/pic/2025-11-26/fileid_1aPF614Jn4683MxgdV3UiuvN5lKyCLsdE_%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20251125182103_66_269.jpg'
 };
 
@@ -618,12 +627,14 @@ function bjHours(t = Date.now()) {
 }
 const inLiveWindow = (t = Date.now()) =>
   bjHours(t) >= CONFIG.liveWindow[0] && bjHours(t) < CONFIG.liveWindow[1];
+const inHeatFast = (t = Date.now()) =>
+  (CONFIG.heatWindows || []).some(w => bjHours(t) >= w[0] && bjHours(t) < w[1]);
 
 /* 请求落地 → 歇 dwell → 再发，永远只有一个在飞；失败按 3 倍退避到最长 30 秒。
-   北京 18–24 点（放量+黄金档）按 live 秒级跑，其余时段降到 idle=15 秒。
+   北京 18–24 点（电视黄金档，播到哪集涨得最凶）按 live 秒级跑，其余时段降到 idle=15 秒。
    15 秒是配额算出来的：嫁金钗白天实测涨 1.9 万/分钟，60 秒一轮会稳定比灯塔页面少 1.9 万，
    看着就像数字坏了；砍到 15 秒滞后只有 ~0.5 万，代价是每个常开标签页多 3240 请求/天。
-   播放量全天都在涨，所以 idle 不能太大，只是黄金档那六小时给到最细。 */
+   优酷 12:00 放量那波 VV 也是全天在涨的一部分，所以秒级窗口不往里扩，15 秒兜住就够。 */
 async function liveLoop() {
   let dwell = CONFIG.refresh.live;
   for (;;) {
@@ -1043,7 +1054,8 @@ function renderMeta() {
   if (m.type?.length) chips.push(m.type.join(' / '));
   if (m.episodeCnt) chips.push(`全 <b>${m.episodeCnt}</b> 集`);
   if (m.platforms?.length) chips.push(m.platforms.join(' · ') + ' 独播');
-  if (m.openDay) chips.push(`网播 <b>${m.openDay}${m.playTime ? ' ' + m.playTime : ''}</b>`);
+  if (m.openDay) { const p = ykPlayAt();
+                   chips.push(`网播 <b>${m.openDay}${p ? ' ' + p.text : ''}</b>`); }
   chips.push('CCTV-8 <b>10.16</b> 21:29 开播');
   if (m.duration) chips.push(`单集 <b>${m.duration}</b> 分钟`);
   document.getElementById('chips').innerHTML = chips.map(c => `<span class="chip">${c}</span>`).join('');
@@ -1126,6 +1138,14 @@ const bjHM = t => new Date(t + 8 * 3600e3).toISOString().slice(11, 16);
    独播平台才是"播放进度"的主轴：优酷 10/16 18:00 一次性放出 4 集，而 CCTV-8 当晚 21:29
    才播第 1 集。拿央视排播当进度会把已播集数少报 3 集，所以央视只当"电视首播"那一行。 */
 
+/* 生效的每日放量时刻。CONFIG.ykPlayTime 优先：优酷 10-17 起是 12:00 更，
+   灯塔 SSR 的 playTime 还停在 18:00。覆盖置 null 就退回采信灯塔字段。 */
+function ykPlayAt() {
+  const hm = String(CONFIG.ykPlayTime || (S.meta || {}).playTime || '')
+               .match(/(\d{1,2}):(\d{2})/);
+  return hm ? { hh: +hm[1], mm: +hm[2], text: hm[1] + ':' + hm[2] } : null;
+}
+
 /* 从官方更新规则原文推「哪天几点更、更完累计几集」。SVIP 是"提前多看 N 集"，
    也就是恒等于 VIP 累计 + N，不是每天都多更 N 集。解析不出来就回空数组，
    倒计时退回央视排播，绝不拿猜出来的日期去倒数。 */
@@ -1163,14 +1183,14 @@ function ykState(now) {
   const m = S.meta || {};
   const upd = String(m.updateEpisode || '');
   const a = upd.match(/更新至\s*(\d+)\s*\/\s*(\d+)\s*集/) || upd.match(/更新至\s*(\d+)\s*集/);
-  const hm = String(m.playTime || '').match(/(\d{1,2}):(\d{2})/);
-  const cal = ykCalendar(hm ? +hm[1] : NaN, hm ? +hm[2] : 0);
+  const p = ykPlayAt();
+  const cal = ykCalendar(p ? p.hh : NaN, p ? p.mm : 0);
   const done = cal.filter(x => x.at <= now);
   let total = m.episodeCnt || 30;
   if (a && a[2]) total = +a[2];
   let n = a ? +a[1] : null;
   if (n == null && done.length) n = done[done.length - 1].cum;
-  return { n, total, at: hm ? hm[1] + ':' + hm[2] : null,
+  return { n, total, at: p ? p.text : null,
            next: cal.find(x => x.at > now) || null,
            last: done.length ? done[done.length - 1] : null };
 }
@@ -1417,13 +1437,16 @@ function renderBaiduChart() {
 /* ============================================================
    调度
    ============================================================ */
-const timers = [];
 const revealJobs = [];
-function every(ms, fn, runOnReveal = false) {
+/* msOrFn 可以传函数：热度那路要按北京时段中途换档，固定周期做不到。
+   自己 reschedule 而不是 setInterval，否则改了周期也得等老间隔跑完才生效。 */
+function every(msOrFn, fn, runOnReveal = false) {
+  const per = () => (typeof msOrFn === 'function' ? msOrFn() : msOrFn);
   let last = 0;
   const tick = () => { last = Date.now(); fn(); };
-  timers.push(setInterval(() => { if (!document.hidden) tick(); }, ms));
-  if (runOnReveal) revealJobs.push(() => { if (Date.now() - last >= ms) tick(); });
+  const loop = () => setTimeout(() => { if (!document.hidden) tick(); loop(); }, per());
+  loop();
+  if (runOnReveal) revealJobs.push(() => { if (Date.now() - last >= per()) tick(); });
 }
 async function safe(name, fn) {
   try { await fn(); return true; }
@@ -1513,16 +1536,24 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') dm.classList
   await refreshAll();
   liveLoop();
   every(CONFIG.refresh.dengta, () => safe('灯塔', loadDengta).then(stamp), true);
-  every(CONFIG.refresh.ssr,    () => safe('灯塔SSR', () => loadSsr()));
-  every(CONFIG.refresh.heat,   () => safe('剧云录', loadHeatAll).then(stamp), true);
-  every(CONFIG.refresh.douban, () => safe('豆瓣', loadDouban));
-  every(CONFIG.refresh.kuyun,  () => safe('酷云', loadKuyun), true);
+  every(CONFIG.refresh.ssr,    () => safe('灯塔SSR', () => loadSsr()), true);
+  every(() => inHeatFast() ? CONFIG.refresh.heatLive : CONFIG.refresh.heat,
+        () => safe('剧云录', loadHeatAll).then(stamp), true);
+  every(CONFIG.refresh.douban, () => safe('豆瓣', loadDouban), true);
+  /* 酷云不挂 revealJobs：它自己 15 秒一轮，隐藏页里定时器照走，回前台最多再等 15 秒，
+     挂进去等于每次切标签页白敲一次代理。 */
+  every(CONFIG.refresh.kuyun,  () => safe('酷云', loadKuyun));
   every(CONFIG.refresh.epg,    () => safe('央视节目单', loadEpg), true);
+  /* 回前台只让 revealJobs 按"各自周期到点没到点"补，不要再无脑全量。
+     原来这里挂了一句 `if (Date.now() - src['灯塔'].at > 90e3) refreshAll()`：
+     src['灯塔'].at 只有 600 秒一轮的 loadDengta 会写，所以切回来几乎必然判定"太老"，
+     于是 ①revealJobs 补过 ②refreshAll 又把六路原样重发一遍 —— 实测一次回前台 8~10 个请求。
+     ssr/douban 之前没注册进 revealJobs，才是那句兜底存在的原因；现在补齐了，就删掉它。
+     refreshAll() 只留给按钮和首屏。 */
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) return;
     renderKPI();
     revealJobs.forEach(j => j());
-    if (Date.now() - (src['灯塔']?.at || 0) > 90e3) refreshAll();
   });
 })();
 </script>
