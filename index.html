@@ -670,6 +670,20 @@ function playVal(k) {
   return a != null ? a : (b != null ? b : null);
 }
 
+/* 播放量五张卡里只有「今日实时播放量」值得 3 秒一跳（他 10-17 点的名）。
+   累计和集均是存量，一小时才挪几十万，跟着秒级重绘只是数字一直滚。
+   取数还是同一趟 mtop，省不出请求 —— 这里锁的是卡片读数，最多 60 秒换一次。
+   市占是瞬时量、要能对上灯塔 App 的当下读数，所以不进这个快照。
+   totalVv 一到位就立刻打快照，别让首屏干等 60 秒。 */
+const SLOW_VV = 60e3;
+let slowVv = { at: 0, v: null };
+function slowVals() {
+  const v = { totalVv: playVal('totalVv'), totalTxt: playVal('totalTxt'),
+              todayRaw: playVal('todayRaw'), epAvg: playVal('epAvg'), epAvgTo: playVal('epAvgTo') };
+  if (Date.now() - slowVv.at >= SLOW_VV || (v.totalVv && !slowVv.v?.totalVv)) slowVv = { at: Date.now(), v };
+  return slowVv.v;
+}
+
 /* SSR 只当兜底：整张 HTML 被灯塔自己的 CDN 缓存 300 秒，它给的 nowValue 最多滞后 5 分钟。
    好处是顺手把海报、集数、上映日这些基础信息一起带回来，10 分钟拉一次就够。 */
 let ssrAt = 0;
@@ -935,11 +949,12 @@ function cardVals() {
   const base = S.jy.max != null ? S.jy.max : (S.ssrHot?.max || null);
   const baseAt = S.jy.maxAt || (S.ssrHot?.maxDate || '');
   const hotAt = (S.jy.cur != null ? S.jy.curAt : S.rankAt) || '';
+  const sv = slowVals();
   const r = S.rankRow, top = S.rankRows[0];
   return {
     youkuHot: { v: now, d: yPeak && now ? now - yPeak : null, dl: '对昨日峰值',
                 sub: (hotAt ? '采样于 ' + hotAt.slice(11, 16) : '热度读取中') +
-                     (base ? ' · 历史最高 ' + fmt(base) + (baseAt ? ' · ' + baseAt.slice(0, 10) : '') : '') },
+                     (base ? ' · 历史最高 ' + fmt(base) + (baseAt ? ' · ' + baseAt.slice(0, 16) : '') : '') },
     growth:   (() => {
       const a = dayPeak(0), b = dayPeak(7), bRow = dayRow(7);
       if (!a || !b) return { v: null, sub: '逐日数据积累中' };
@@ -953,15 +968,15 @@ function cardVals() {
     todayVv:  { v: playVal('todayVv'), u: playVal('todayVv') ? '万' : '',
                 sub: playVal('todayRaw') ? '原始 ' + fmt(playVal('todayRaw')) : '播放量接口读取中' },
     totalVv:  (() => {
-      const t = playVal('totalVv'), txt = playVal('totalTxt'), raw = playVal('todayRaw');
+      const t = sv.totalVv, txt = sv.totalTxt, raw = sv.todayRaw;
       if (!t) return { v: null, sub: '播放量接口读取中' };
       /* 开播首日累计就等于当日数，两个卡片数字一样是正常的，写出来免得看着像 BUG */
       return { v: txt, u: '万', sub: '原始 ' + fmt(t) + (raw && t === raw ? ' · 开播首日与今日同量' : '') };
     })(),
     share:    { v: playVal('share'), u: playVal('share') ? '%' : '',
                 sub: playVal('shareMax') ? '历史最高 ' + playVal('shareMax') + '%' : '市占数据读取中' },
-    epAvg:    { v: playVal('epAvg'), u: playVal('epAvg') ? '万' : '',
-                sub: playVal('epAvg') ? (playVal('epAvgTo') || '') : '灯塔暂未给出集均' },
+    epAvg:    { v: sv.epAvg, u: sv.epAvg ? '万' : '',
+                sub: sv.epAvg ? (sv.epAvgTo || '') : '灯塔暂未给出集均' },
     yestVv:   (() => {
       const key = ymd(new Date(Date.now() - 864e5)).replace(/-/g, '');
       const y = S.vvRows.find(x => String(x.showDate) === key);
