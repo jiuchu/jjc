@@ -10,19 +10,24 @@
 # 只有当你把嫁金钗塞进某个子目录（比如和长征共用一个仓库、站点在 /jiajinchai/ 下）时，
 # 才需要把这一行改成 jiajinchai/baidu-index.json —— 改这一处就够，提交步骤用的是同一个变量。
 #
-# cron 是 UTC。百度页面写"每天 12~16 时出昨天的数"，实测会提前，所以窗口给到
-# 北京 12:00–18:55（UTC 4–10）。10-17 从每小时一次改成每 5 分钟一次（168 次/天）：
-# 脚本开头有"本地 asof 已是昨天就直接退出"的判断（fetch_baidu_index.mjs:51），
-# 所以当天第一次抓到数之后，后面的每一轮都是几秒空转 —— 不启动无头浏览器、
-# 不重打百度、不产生 commit、不触发 Pages 重建。公共仓库的 Actions 分钟数免费，
-# 这个频率的真实代价只是"多开几个空 runner"，不是多打接口。
+# cron 是 UTC。百度写"每天 12~16 时出昨天的数"，实测会提前，所以窗口给到
+# 北京 12:10–18:10。脚本开头有"本地 asof 已是昨天就直接退出"的判断
+# （fetch_baidu_index.mjs:51），所以当天抓到一次之后，剩下的每一轮都是十几秒空转：
+# 不启动无头浏览器、不重打百度、不产生 commit、不触发 Pages 重建。
+#
+# ⚠ 但这条 schedule 现在是**死的**：GitHub 的定时事件从他这个账号整个停了
+#   （jjc / wddcz / TieBaSign 三个仓库 event=schedule 合计只剩 10-08 以前的记录，
+#   而手动 workflow_dispatch 一直是好的）。所以真正每天敲门的是他那个 Cloudflare
+#   Worker 的 Cron Triggers，它 POST 这个接口的 dispatches 来叫这条 workflow。
+#   下面的 schedule 只当备份，故意错开分钟（13:40 / 17:40），免得和主闹钟同一分钟
+#   撞进同一个 concurrency 组、被 cancel-in-progress 把自己掐了。
 # 注意：YAML 的注释只能以 # 开头，写成 /* */ 会让整个文件解析失败、GitHub 直接不认这个 workflow。
 
 name: baidu-index-jiajinchai
 
 on:
   schedule:
-    - cron: '*/5 4-10 * * *'
+    - cron: '40 5,9 * * *'
   workflow_dispatch:
 
 permissions:
