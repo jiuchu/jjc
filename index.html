@@ -326,7 +326,7 @@ footer a:active{transform:translateY(0)}
         <span class="chip">剧情 / 爱情 / 古装</span>
         <span class="chip">全 <b>30</b> 集</span>
         <span class="chip">优酷 独播</span>
-        <span class="chip">CCTV-8 <b>2026.10.16</b> 开播</span>
+        <span class="chip">CCTV-8 <b>2026.10.16</b> 首播</span>
       </div>
       <div class="byline">
         导演 杨龙 ｜ 主演 田曦薇、闫桉 ｜ 作者
@@ -470,6 +470,9 @@ const CONFIG = {
      灯塔那边还写着 18:00，拿它做更新倒计时会整天差 6 小时。这里覆盖掉，
      置 null 就退回采信灯塔字段。 */
   ykPlayTime: '12:00',
+  /* 首播那一天的时刻和之后每天的不是一回事：10-16 第 1 集 uploadDate 是 17:59:59（18:00 整批放出 4 集），
+     10-17 起才改到中午。灯塔热度榜行里的 openDayStr 原文就是「2026.10.16 18:00上线」，两边对得上。 */
+  ykFirstTime: '18:00',
   donate: 'https://pic.sl.al/gdrive/pic/2025-11-26/fileid_1aPF614Jn4683MxgdV3UiuvN5lKyCLsdE_%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20251125182103_66_269.jpg'
 };
 
@@ -1069,9 +1072,12 @@ function renderMeta() {
   if (m.type?.length) chips.push(m.type.join(' / '));
   if (m.episodeCnt) chips.push(`全 <b>${m.episodeCnt}</b> 集`);
   if (m.platforms?.length) chips.push(m.platforms.join(' · ') + ' 独播');
-  if (m.openDay) { const p = ykPlayAt();
-                   chips.push(`网播 <b>${m.openDay}${p ? ' ' + p.text : ''}</b>`); }
-  chips.push('CCTV-8 <b>10.16</b> 21:29 开播');
+  /* 「网播 + 一个时刻」以前把首播日和每日时点混成一件事：10-16 是 18:00 那一批，
+     10-17 起才改到中午 12:00。两张 chip 分开写，读者才知道哪个是历史、哪个是现在的节奏。 */
+  const f = ykFirstAt(), p = ykPlayAt();
+  if (m.openDay) chips.push(`首播 <b>${m.openDay}${f ? ' ' + f.text : ''}</b> 上线`);
+  if (p) chips.push(`优酷 <b>每日 ${p.text}</b> 更新`);
+  chips.push('CCTV-8 <b>10.16</b> 21:29 首播');
   if (m.duration) chips.push(`单集 <b>${m.duration}</b> 分钟`);
   document.getElementById('chips').innerHTML = chips.map(c => `<span class="chip">${c}</span>`).join('');
   renderMarch();
@@ -1160,20 +1166,27 @@ function ykPlayAt() {
                .match(/(\d{1,2}):(\d{2})/);
   return hm ? { hh: +hm[1], mm: +hm[2], text: hm[1] + ':' + hm[2] } : null;
 }
+/* 首播那一天的时刻，只影响日历第一格和「首播 …上线」那张 chip */
+function ykFirstAt() {
+  const hm = String(CONFIG.ykFirstTime || '').match(/(\d{1,2}):(\d{2})/);
+  return hm ? { hh: +hm[1], mm: +hm[2], text: hm[1] + ':' + hm[2] } : ykPlayAt();
+}
 
 /* 从官方更新规则原文推「哪天几点更、更完累计几集」。SVIP 是"提前多看 N 集"，
    也就是恒等于 VIP 累计 + N，不是每天都多更 N 集。解析不出来就回空数组，
-   倒计时退回央视排播，绝不拿猜出来的日期去倒数。 */
-function ykCalendar(hh, mm) {
+   倒计时退回央视排播，绝不拿猜出来的日期去倒数。
+   fhh/fmm 是首播日那一次的时点，缺省跟每日时点一致。 */
+function ykCalendar(hh, mm, fhh, fmm) {
   const text = S.ykRule, m = S.meta || {};
   const open = String(m.openDay || '').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);
   if (!text || !open || !Number.isFinite(hh)) return [];
   const extra = +((text.match(/提前多看\s*(\d+)\s*集/) || [])[1] || 0);
   const first = +((text.match(/首更\s*(\d+)\s*集/) || [])[1] || 0);
   const per   = +((text.match(/每天更新\s*(\d+)\s*集/) || [])[1] || 0);
-  const bjAt = (y, mo, d) => Date.parse(y + '-' + pad2(mo) + '-' + pad2(d) +
-                              'T' + pad2(hh) + ':' + pad2(mm) + ':00+08:00');
-  const out = [{ at: bjAt(+open[1], +open[2], +open[3]), cum: first + extra }];
+  const bjAt = (y, mo, d, H, M) => Date.parse(y + '-' + pad2(mo) + '-' + pad2(d) +
+                              'T' + pad2(H == null ? hh : H) + ':' + pad2(M == null ? mm : M) + ':00+08:00');
+  const day1 = Number.isFinite(fhh) ? { h: fhh, m: fmm } : { h: hh, m: mm };
+  const out = [{ at: bjAt(+open[1], +open[2], +open[3], day1.h, day1.m), cum: first + extra }];
   const rng = text.match(/(\d{1,2})月(\d{1,2})日至(?:(\d{1,2})月)?(\d{1,2})日/);
   if (rng && per) {
     let y = +open[1];
@@ -1198,8 +1211,8 @@ function ykState(now) {
   const m = S.meta || {};
   const upd = String(m.updateEpisode || '');
   const a = upd.match(/更新至\s*(\d+)\s*\/\s*(\d+)\s*集/) || upd.match(/更新至\s*(\d+)\s*集/);
-  const p = ykPlayAt();
-  const cal = ykCalendar(p ? p.hh : NaN, p ? p.mm : 0);
+  const p = ykPlayAt(), f = ykFirstAt();
+  const cal = ykCalendar(p ? p.hh : NaN, p ? p.mm : 0, f ? f.hh : NaN, f ? f.mm : 0);
   const done = cal.filter(x => x.at <= now);
   let total = m.episodeCnt || 30;
   if (a && a[2]) total = +a[2];
@@ -1500,18 +1513,24 @@ function checkNotice() {
 function tickCountdown() {
   const now = Date.now();
   const yk = ykState(now), st = epgState(now);
-  const cand = [];
-  if (yk.next) cand.push({ at: yk.next.at, label: '距优酷更新' });
+  const dur = ms => {
+    if (ms < 0) ms = 0;
+    const d = Math.floor(ms / 864e5), h = Math.floor(ms % 864e5 / 36e5),
+          m = Math.floor(ms % 36e5 / 6e4), s = Math.floor(ms % 6e4 / 1000);
+    return `${d ? d + '天' : ''}${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+  };
+  /* 优酷那一档拼进主标签，不再跟央视档期抢右侧那个位置：日历是照 playRule 原文推的
+     （首更3集 / 10月17日至10月21日每天更新2集 / SVIP提前多看1集），所以倒数到的是
+     12:00 那一批（2 集），文案写「距优酷更新」不写「距下一集」，别让人以为只等一集。 */
+  const el = document.getElementById('marchText');
+  if (el && yk.n) el.textContent = `优酷已更 ${yk.n}/${yk.total} 集` +
+    (yk.next ? ' · 距优酷更新 ' + dur(yk.next.at - now) : ' · 更新排期待公布');
+  const cd = document.getElementById('countdown');
   /* 两集连播，标签必须带上集数：21:29 第1集开播后，下一个正片档是 22:21 的第2集，
      这时候光写「距 CCTV 播出」看着像第1集还没播。提要不参与倒数（epItem 里 n=0 已被滤掉）。 */
-  if (st && st.next) cand.push({ at: st.next.st, label: `距 CCTV 第${st.next.n}集播出` });
-  cand.sort((a, b) => a.at - b.at);
-  const el = document.getElementById('countdown');
-  if (!cand.length) { el.textContent = yk.n ? '已更完 · 待平台排期' : '--:--:--'; return; }
-  let ms = cand[0].at - now;
-  if (ms < 0) ms = 0;
-  const d = Math.floor(ms / 864e5), h = Math.floor(ms % 864e5 / 36e5), m = Math.floor(ms % 36e5 / 6e4), s = Math.floor(ms % 6e4 / 1000);
-  el.textContent = `${cand[0].label} ${d ? d + '天' : ''}${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+  if (st && st.next) { cd.textContent = `距 CCTV 第${st.next.n}集播出 ` + dur(st.next.st - now); return; }
+  if (yk.next)      { cd.textContent = '距优酷更新 ' + dur(yk.next.at - now); return; }
+  cd.textContent = yk.n ? '已更完 · 待平台排期' : '--:--:--';
 }
 
 function decorate() {
