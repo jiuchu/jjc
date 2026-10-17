@@ -459,7 +459,7 @@ const CONFIG = {
   /* live/idle 是一对：北京 liveWindow 内按 live 秒级轮，窗口外自动降到 idle。
      Cloudflare 免费额度 10 万请求/天是整个账号共享的，两个面板加所有轮询都算在里面，
      之前两边全程开秒级，一天烧到 9 万，直接 1027 停摆。 */
-  refresh: { dengta: 120e3, live: 3e3, idle: 60e3, ssr: 10 * 60e3, heat: 60e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3 },
+  refresh: { dengta: 120e3, live: 3e3, idle: 15e3, ssr: 10 * 60e3, heat: 60e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3 },
   liveWindow: [18, 24],             // 北京 18:00 放量 ~ 24:00，其余时段数字慢一点没关系
   donate: 'https://pic.sl.al/gdrive/pic/2025-11-26/fileid_1aPF614Jn4683MxgdV3UiuvN5lKyCLsdE_%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20251125182103_66_269.jpg'
 };
@@ -620,8 +620,10 @@ const inLiveWindow = (t = Date.now()) =>
   bjHours(t) >= CONFIG.liveWindow[0] && bjHours(t) < CONFIG.liveWindow[1];
 
 /* 请求落地 → 歇 dwell → 再发，永远只有一个在飞；失败按 3 倍退避到最长 30 秒。
-   北京 18–24 点（放量+黄金档）才按 live 秒级跑，其余时段降到 idle=60 秒，数字慢一点但不断；
-   页面失焦降到 6 秒、标签页切走直接停。播放量全天都在涨，只是除了那六小时没人盯。 */
+   北京 18–24 点（放量+黄金档）按 live 秒级跑，其余时段降到 idle=15 秒。
+   15 秒是配额算出来的：嫁金钗白天实测涨 1.9 万/分钟，60 秒一轮会稳定比灯塔页面少 1.9 万，
+   看着就像数字坏了；砍到 15 秒滞后只有 ~0.5 万，代价是每个常开标签页多 3240 请求/天。
+   播放量全天都在涨，所以 idle 不能太大，只是黄金档那六小时给到最细。 */
 async function liveLoop() {
   let dwell = CONFIG.refresh.live;
   for (;;) {
