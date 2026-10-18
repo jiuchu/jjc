@@ -937,8 +937,6 @@ function pad2(n) { return String(n).padStart(2, '0'); }
 
 const CARDS = [
   { k: 'youkuHot',  name: '优酷实时热度',   c: 'var(--youku)', ico: 'M12 2a10 10 0 100 20 10 10 0 000-20zm0 4a6 6 0 110 12 6 6 0 010-12z' },
-  { k: 'growth',    name: '七日热度增幅',   c: 'var(--ember)', ico: 'M4 20V8h4v12H4zm6 0V4h4v16h-4zm6 0v-8h4v8h-4z' },
-  { k: 'youkuRank', name: '优酷剧集热度榜', c: '#b478ff',      ico: 'M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 16.9l-6.1 3.5 1.4-6.8L2.2 9l6.9-.7L12 2z' },
   { k: 'todayVv',   name: '今日实时播放量', c: 'var(--gold)',  ico: 'M3 17l5-6 4 4 5-7 4 5V3H3v14z' },
   { k: 'totalVv',   name: '累计正片播放量', c: 'var(--gold)',  ico: 'M4 4h16v4H4V4zm0 6h16v10H4V10z' },
   { k: 'share',     name: '实时播放市占',   c: 'var(--ember)', ico: 'M12 2a10 10 0 100 20 10 10 0 000-20zm1 5v6l5 3-.8 1.3L11 13V7h2z' },
@@ -957,21 +955,10 @@ function cardVals() {
   const baseAt = S.jy.maxAt || (S.ssrHot?.maxDate || '');
   const hotAt = (S.jy.cur != null ? S.jy.curAt : S.rankAt) || '';
   const sv = slowVals();
-  const r = S.rankRow, top = S.rankRows[0];
   return {
     youkuHot: { v: now, d: yPeak && now ? now - yPeak : null, dl: '对昨日峰值',
                 sub: (hotAt ? '采样于 ' + hotAt.slice(11, 16) : '热度读取中') +
                      (base ? ' · 历史最高 ' + fmt(base) + (baseAt ? ' · ' + baseAt.slice(0, 16) : '') : '') },
-    growth:   (() => {
-      const a = dayPeak(0), b = dayPeak(7), bRow = dayRow(7);
-      if (!a || !b) return { v: null, sub: '逐日数据积累中' };
-      const lbl = bRow ? bRow.date.slice(4, 6) + '/' + bRow.date.slice(6, 8) : '七天前';
-      return { v: +(((a / b) - 1) * 100).toFixed(1), u: '%',
-               sub: `较 ${lbl} 的 ${fmt(b)}` };
-    })(),
-    youkuRank:{ v: r ? (r.mediaRank + 1) : null, u: r ? '名' : '',
-                sub: r ? (S.rankRows.length + ' 部在榜 · 榜首《' + (top?.mediaName || '') + '》' + fmt(top?.cnt) +
-                     (r.rankTag === 'NEW' ? ' · 新入榜' : '')) : '榜单未取到' },
     todayVv:  { v: playVal('todayVv'), u: playVal('todayVv') ? '万' : '',
                 sub: playVal('todayRaw') ? '原始 ' + fmt(playVal('todayRaw')) : '播放量接口读取中' },
     totalVv:  (() => {
