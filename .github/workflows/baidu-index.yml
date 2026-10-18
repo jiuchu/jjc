@@ -10,9 +10,13 @@
 # 只有当你把嫁金钗塞进某个子目录（比如和长征共用一个仓库、站点在 /jiajinchai/ 下）时，
 # 才需要把这一行改成 jiajinchai/baidu-index.json —— 改这一处就够，提交步骤用的是同一个变量。
 #
-# cron 是 UTC。百度写"每天 12~16 时出昨天的数"，实测会提前，所以窗口给到
-# 北京 12:10–18:10。抓到一次之后剩下的每一轮由下面那个「要不要跑」步骤挡在装浏览器
-# 之前，十几秒就结束：不开无头浏览器、不重打百度、不产生 commit、不触发 Pages 重建。
+# 节拍不在这里，在 Worker 的 Settings → Triggers 页上（cron 是 UTC）。
+# 2026-10-18 起是 */30 3-12 = 北京 11:00~20:30 每半小时一格，20 格/天，两个仓库共用同一个闹钟
+# 所以这里改一处、长征那边跟着一起慢。为什么给这么密：百度官方说 12~16 出昨天的数，
+# 但实测既不固定也可能整天不出（10-18 那天它自己还停在 10-16），出数即抓才不用干等三小时。
+# 一个格子管一天只有一次真 commit：asof 前进才写文件，其余每一轮由下面那个「要不要跑」
+# 步骤挡在装浏览器之前，二十几秒就结束 —— 不开无头浏览器、不重打百度、不触发 Pages 重建。
+# ⚠ 半小时是赌百度只看间距不看总数。真吃了 10001 就退回 5 3-12（一小时一格）观察两天。
 #
 # ⚠ 但这条 schedule 现在是**死的**：GitHub 的定时事件从他这个账号整个停了
 #   （jjc / wddcz / TieBaSign 三个仓库 event=schedule 合计只剩 10-08 以前的记录，
@@ -31,6 +35,10 @@ on:
 
 permissions:
   contents: write
+  # 上面那个护栏要读本工作流的 run 列表。一旦写了 permissions 这一节，没列出来的
+  # 作用域就全是 none，所以 actions 必须显式给 read —— 不给的话护栏永远读到 9999，
+  # 静默失效，比没有还难查。
+  actions: read
 
 concurrency:
   group: baidu-index-jiajinchai
@@ -49,19 +57,36 @@ jobs:
         with:
           node-version: '22'
 
-      # 先花两秒钟问一句"仓库里这份是不是已经是昨天的数了"，是的话下面三步整个跳过。
-      # 判据和 fetch_baidu_index.mjs:51 那句守卫一模一样：asof == 北京时间的昨天。
-      # 这一步存在的唯一理由：装 Chromium 那一步无条件跑的话，每次空转也要 1.5~2 分钟，
-      # 一天十几次下来 Actions 列表全是噪音；挡在安装之前才叫真省。
+      # 两句话：仓库里这份已经是昨天的数了 → 跳过；或者距上一条 run 不足 GAP 分钟 → 跳过。
+      # 第二句是防手点的：手点十次就是十次真抓，账号最快也只挨 GAP 分钟一次。
+      # ⚠ GAP 必须**小于** Worker 的节拍（现在北京 11:00~20:30 每半小时一格）。
+      #   填 90 的话，20 格里只有约 7 格真跑，其余全成 skip，Actions 列表看着像坏了。
+      #   20 这个数是"挡住连点、放过正常排班"：GitHub 排队抖动一般也就十几分钟。
+      # ⚠ 时钟只能用 run 历史，不能用 baidu-index.json 里的 fetchedAt —— 百度没出数时
+      #   脚本压根不写文件（fetch_baidu_index.mjs 末尾 prev >= asof 那句），fetchedAt 会停在
+      #   好几天前。2026-10-18 就是这样：百度还停在 10-16，七个格子全成真抓，一个没跳过。
       # ⚠ 要用 BAIDU_PROBE 探测模式时，把下面三处 if 临时删掉 —— 探测模式本来就该每轮真跑。
       - name: 要不要跑
         id: need
+        env:
+          WF: baidu-index.yml     # API 认的是工作流文件名，不是 name 字段
+          GAP: '20'               # 两次真抓之间最少隔这么多分钟
         run: |
           want=$(TZ=Asia/Shanghai date -d "yesterday" +%F)
           have=$(node -p "try{JSON.parse(require('fs').readFileSync('$BAIDU_OUT','utf8')).asof}catch(e){''}")
-          echo "期望 asof=$want  仓库里=$have"
+          curl -sS -m 20 -H "Authorization: Bearer $GITHUB_TOKEN" \
+               -H "Accept: application/vnd.github+json" \
+               -o _runs.json \
+               "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/workflows/$WF/runs?per_page=10" || :
+          since=$(node -p "try{const j=JSON.parse(require('fs').readFileSync('_runs.json','utf8'));const m=(j.workflow_runs||[]).filter(r=>r.id!==+process.env.GITHUB_RUN_ID).map(r=>(Date.now()-Date.parse(r.created_at))/6e4);m.length?Math.floor(Math.min(...m)):9999}catch(e){9999}")
+          # API 没答话（权限没给、网络抖）就当没有上一条：护栏失效但抓取照跑。
+          # 反过来 fail-closed 的话，一个 curl 抖动就能让百度指数连着几天不出数。
+          case "$since" in ''|*[!0-9]*) since=9999 ;; esac
+          echo "仓库里 asof=$have（期望 $want）· 距上一条 run $since 分钟（下限 $GAP）"
           if [ -n "$have" ] && [ "$have" = "$want" ]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "skip=true" >> "$GITHUB_OUTPUT"; echo "已经是昨天的数，收工"
+          elif [ "$since" -lt "$GAP" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"; echo "距上次不足 $GAP 分钟，这发不去敲百度"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
