@@ -705,14 +705,18 @@ async function loadSsr(force = false) {
   if (y && y.nowValue) S.ssrHot = { now: +y.nowValue, max: y.maxValue ? +y.maxValue : null, maxDate: y.maxValueDate || '' };
   /* 这块在开播前是 dataPresent:false（灯塔把播放量整块关了），所以现在没数不代表以后一直没数 */
   const pl = comps.beacon_media_play_count_summary_v1 || {};
+  /* 灯塔在累计过亿那一刻把展示单位从「万」切成「亿」，valueUnit.value 变成 "1.08" 这种字符串，
+     而卡片上的「万」字是写死的 —— 于是显示成 1.08 万。这里一律不抄它的展示串，只读 .value 自己除以 1e4。
+     市占那两个字段反过来：它的 .value 是嵌套对象 {value:"0.2277"}，只有 valueUnit.value 是能用的百分数。 */
+  const toWan = x => { const v = +x?.value; return v ? (v / 1e4).toFixed(2) : null; };
   if (pl.todayTotalPlayVvCnt) S.ssrPlay = {
-    todayVv:  pl.todayTotalPlayVvCnt?.nowValueWithUnit?.valueUnit?.value || null,
+    todayVv:  toWan(pl.todayTotalPlayVvCnt?.nowValueWithUnit),
     todayRaw: pl.todayTotalPlayVvCnt?.nowValueWithUnit?.value || null,
     totalVv:  pl.todayTotalPlayVvCnt?.totalValueWithUnit?.value || null,
-    totalTxt: pl.todayTotalPlayVvCnt?.totalValueWithUnit?.valueUnit?.value || null,
+    totalTxt: toWan(pl.todayTotalPlayVvCnt?.totalValueWithUnit),
     share:    pl.todayTotalMarketShare?.nowValueWithUnit?.valueUnit?.value || null,
     shareMax: pl.todayTotalMarketShare?.maxValueWithUnit?.valueUnit?.value || null,
-    epAvg:    pl.episodeAveragePlay?.nowValueWithUnit?.valueUnit?.value || null,
+    epAvg:    toWan(pl.episodeAveragePlay?.nowValueWithUnit),
     epAvgTo:  pl.episodeAveragePlay?.fixedDateStr || null
   };
   ssrAt = Date.now();
@@ -1293,7 +1297,6 @@ function renderHonor() {
   }
   if (S.douban?.dbRank) items.push({ g: '🌟', t: '豆瓣' + (S.douban.rankTitle || '热门电视') + '实时榜第 ' + S.douban.dbRank + ' 名',
                  d: '热度值 ' + fmt(S.douban.hotScore) });
-  if (S.douban && !S.douban.score && S.douban.cmt) items.push({ g: '💬', t: '豆瓣短评 ' + fmt(S.douban.cmt) + ' 条', d: '长评 ' + fmt(S.douban.review) + ' 条 · 暂无评分' });
   if (S.kuyun) items.push({ g: '📺', t: 'CCTV-8 实时收视率 ' + (S.kuyun.rating * 100).toFixed(4) + '%',
                  d: '全国同时段第 ' + S.kuyun.rank + ' 名 · ' + esc(S.kuyun.epg || '') });
 
