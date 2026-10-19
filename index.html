@@ -1042,7 +1042,9 @@ function renderKPI() {
     if (d.d != null && !isNaN(d.d)) {
       const cls = d.d > 0 ? 'up' : d.d < 0 ? 'down' : 'flat';
       const ar = d.d > 0 ? '▲' : d.d < 0 ? '▼' : '—';
-      sub += `<span class="delta ${cls}">${ar} ${fmt(Math.abs(Math.round(d.d)))}</span>`;
+      /* dp = 保留几位小数（畅销榜的增量用），不给就还是原来的取整 + 千分位 */
+      const n = d.dp ? Math.abs(d.d).toFixed(d.dp) : fmt(Math.round(Math.abs(d.d)));
+      sub += `<span class="delta ${cls}">${ar} ${n}${d.du || ''}</span>`;
       if (d.dl) sub += `<span>${esc(d.dl)}</span>`;
     }
     if (d.sub) sub += `<span${d.warn ? ' class="warn"' : ''}>${esc(d.sub)}</span>`;
@@ -1499,17 +1501,20 @@ function bbStamp() {
   return s ? ' · 最后一次采集 ' + s : '';
 }
 /* 两张 KPI 卡共用一个取值函数：which 只决定读 latest 里的哪一对字段。
-   名次是反的 —— 数字变小才是前进，所以要取负再交给 delta，才会落进"涨=红"。 */
+   药丸里放的是畅销度的增量，不是名次变化 —— 名次就是上面那个大字，它一动你自然看得见；
+   而 7 日榜首名和第 2 名差着 687 万，名次一整天都是 0，拿它当"较上一采样"等于没报信。
+   增量要留两位小数：半小时的涨通常只有几万元，取整就成 3 甚至 0 了。 */
 function bbCardVal(which, rule) {
   const L = BB.latest;
   if (!L) return { v: null, sub: BB.note || '暂无数据' };
   const rank = which === 'week' ? L.weekRank : L.yearRank;
   const val = which === 'week' ? L.weekValue : L.yearValue;
   const p = BB.samples.length > 1 ? BB.samples[BB.samples.length - 2] : null;
-  const pr = p ? (which === 'week' ? p.weekRank : p.yearRank) : null;
-  const mv = (rank == null || pr == null) ? null : pr - rank;
+  const pv = p ? (which === 'week' ? p.weekValue : p.yearValue) : null;
+  const mv = (val == null || pv == null) ? null : +(val - pv).toFixed(2);
   const hhmm = BB.at ? bjStamp(BB.at).slice(-5) : '';
-  return { v: rank, u: rank == null ? '' : '名', d: mv, dl: mv == null ? null : '较上一采样',
+  return { v: rank, u: rank == null ? '' : '名',
+           d: mv, dp: 2, du: '万', dl: mv == null ? null : '较上一采样',
            sub: (val == null ? '不在前 20' : '畅销度 ' + fmt(val) + '万') + ' · ' + rule +
                 (hhmm ? ' · ' + hhmm + ' 采样' : '') };
 }
