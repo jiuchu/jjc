@@ -5,48 +5,48 @@
  "asof": "2026-10-20",
  "latest": {
   "date": "2026-10-20",
-  "hm": "03:01",
-  "iso": "2026-10-20 03:01 +08",
+  "hm": "03:16",
+  "iso": "2026-10-20 03:16 +08",
   "weekRank": 1,
-  "weekValue": 4459.47,
+  "weekValue": 4460.68,
   "yearRank": 10,
-  "yearValue": 3296.3
+  "yearValue": 3296.43
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4459.47
+   "value": 4460.68
   },
   {
    "rank": 2,
    "title": "无可替代",
-   "value": 3655.11
+   "value": 3655.14
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 3616.15
+   "value": 3616.14
   },
   {
    "rank": 4,
    "title": "此处通往繁星",
-   "value": 3597.56
+   "value": 3597.57
   },
   {
    "rank": 5,
    "title": "一瓯春",
-   "value": 3583.72
+   "value": 3583.74
   },
   {
    "rank": 6,
    "title": "九门",
-   "value": 3579.67
+   "value": 3579.69
   },
   {
    "rank": 7,
    "title": "冬城猎凶",
-   "value": 3579.5
+   "value": 3579.49
   },
   {
    "rank": 8,
@@ -66,7 +66,7 @@
   {
    "rank": 11,
    "title": "当我飞奔向你",
-   "value": 3567.85
+   "value": 3567.86
   },
   {
    "rank": 12,
@@ -76,17 +76,17 @@
   {
    "rank": 13,
    "title": "春花焰",
-   "value": 3565.8
+   "value": 3565.81
   },
   {
    "rank": 14,
    "title": "入青云",
-   "value": 3564.76
+   "value": 3564.77
   },
   {
    "rank": 15,
    "title": "师兄太稳健",
-   "value": 3562.59
+   "value": 3562.61
   },
   {
    "rank": 16,
@@ -96,22 +96,22 @@
   {
    "rank": 17,
    "title": "藏海传",
-   "value": 3560.98
+   "value": 3560.99
   },
   {
    "rank": 18,
    "title": "良辰好景知几何",
-   "value": 3560.04
+   "value": 3560.06
   },
   {
    "rank": 19,
    "title": "蜀锦人家",
-   "value": 3556.68
+   "value": 3556.71
   },
   {
    "rank": 20,
    "title": "以法之名",
-   "value": 3556.43
+   "value": 3556.45
   }
  ],
  "samples": [
@@ -338,9 +338,17 @@
    "weekValue": 4459.47,
    "yearRank": 10,
    "yearValue": 3296.3
+  },
+  {
+   "date": "2026-10-20",
+   "hm": "03:16",
+   "weekRank": 1,
+   "weekValue": 4460.68,
+   "yearRank": 10,
+   "yearValue": 3296.43
   }
  ],
- "fetchedAt": "2026-10-19T19:01:09.094Z",
- "lastRun": "2026-10-19T19:01:09.094Z",
+ "fetchedAt": "2026-10-19T19:16:14.574Z",
+ "lastRun": "2026-10-19T19:16:14.574Z",
  "count": 20
 }
