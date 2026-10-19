@@ -5,113 +5,113 @@
  "asof": "2026-10-19",
  "latest": {
   "date": "2026-10-19",
-  "hm": "23:01",
-  "iso": "2026-10-19 23:01 +08",
+  "hm": "23:31",
+  "iso": "2026-10-19 23:31 +08",
   "weekRank": 1,
-  "weekValue": 4434.28,
+  "weekValue": 4440.47,
   "yearRank": 10,
-  "yearValue": 3264.55
+  "yearValue": 3268.82
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4434.28
+   "value": 4440.47
   },
   {
    "rank": 2,
    "title": "无可替代",
-   "value": 3679.45
+   "value": 3679.92
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 3630.75
+   "value": 3633.46
   },
   {
    "rank": 4,
    "title": "此处通往繁星",
-   "value": 3608.91
+   "value": 3609.93
   },
   {
    "rank": 5,
    "title": "一瓯春",
-   "value": 3585.4
+   "value": 3585.9
   },
   {
    "rank": 6,
    "title": "冬城猎凶",
-   "value": 3584.39
+   "value": 3584.46
   },
   {
    "rank": 7,
    "title": "九门",
-   "value": 3581.18
+   "value": 3580.79
   },
   {
    "rank": 8,
    "title": "月鳞绮纪",
-   "value": 3572.11
+   "value": 3572.2
   },
   {
    "rank": 9,
    "title": "翘楚",
-   "value": 3570.23
+   "value": 3570.3
   },
   {
    "rank": 10,
    "title": "悬案",
-   "value": 3569.39
+   "value": 3569.43
   },
   {
    "rank": 11,
    "title": "难哄",
-   "value": 3569.15
+   "value": 3569.2
   },
   {
    "rank": 12,
    "title": "当我飞奔向你",
-   "value": 3568.97
+   "value": 3569.02
   },
   {
    "rank": 13,
    "title": "春花焰",
-   "value": 3568.42
+   "value": 3568.45
   },
   {
    "rank": 14,
    "title": "入青云",
-   "value": 3566.91
+   "value": 3567
   },
   {
    "rank": 15,
    "title": "师兄太稳健",
-   "value": 3566.04
+   "value": 3566.13
   },
   {
    "rank": 16,
    "title": "藏海传",
-   "value": 3564.63
+   "value": 3564.69
   },
   {
    "rank": 17,
    "title": "千香",
-   "value": 3563.54
+   "value": 3563.74
   },
   {
    "rank": 18,
    "title": "蜀锦人家",
-   "value": 3563.14
+   "value": 3563.22
   },
   {
    "rank": 19,
    "title": "以法之名",
-   "value": 3562.78
+   "value": 3562.87
   },
   {
    "rank": 20,
    "title": "良辰好景知几何",
-   "value": 3561.42
+   "value": 3561.67
   }
  ],
  "samples": [
@@ -274,9 +274,17 @@
    "weekValue": 4434.28,
    "yearRank": 10,
    "yearValue": 3264.55
+  },
+  {
+   "date": "2026-10-19",
+   "hm": "23:31",
+   "weekRank": 1,
+   "weekValue": 4440.47,
+   "yearRank": 10,
+   "yearValue": 3268.82
   }
  ],
- "fetchedAt": "2026-10-19T15:01:11.470Z",
- "lastRun": "2026-10-19T15:01:11.470Z",
+ "fetchedAt": "2026-10-19T15:31:09.994Z",
+ "lastRun": "2026-10-19T15:31:09.994Z",
  "count": 20
 }
