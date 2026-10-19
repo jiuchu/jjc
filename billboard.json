@@ -5,23 +5,23 @@
  "asof": "2026-10-20",
  "latest": {
   "date": "2026-10-20",
-  "hm": "03:16",
-  "iso": "2026-10-20 03:16 +08",
+  "hm": "03:31",
+  "iso": "2026-10-20 03:31 +08",
   "weekRank": 1,
-  "weekValue": 4460.68,
+  "weekValue": 4461.64,
   "yearRank": 10,
-  "yearValue": 3296.43
+  "yearValue": 3296.55
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4460.68
+   "value": 4461.64
   },
   {
    "rank": 2,
    "title": "无可替代",
-   "value": 3655.14
+   "value": 3655.17
   },
   {
    "rank": 3,
@@ -31,17 +31,17 @@
   {
    "rank": 4,
    "title": "此处通往繁星",
-   "value": 3597.57
+   "value": 3597.58
   },
   {
    "rank": 5,
    "title": "一瓯春",
-   "value": 3583.74
+   "value": 3583.77
   },
   {
    "rank": 6,
    "title": "九门",
-   "value": 3579.69
+   "value": 3579.72
   },
   {
    "rank": 7,
@@ -61,7 +61,7 @@
   {
    "rank": 10,
    "title": "悬案",
-   "value": 3567.97
+   "value": 3567.98
   },
   {
    "rank": 11,
@@ -81,17 +81,17 @@
   {
    "rank": 14,
    "title": "入青云",
-   "value": 3564.77
+   "value": 3564.78
   },
   {
    "rank": 15,
    "title": "师兄太稳健",
-   "value": 3562.61
+   "value": 3562.6
   },
   {
    "rank": 16,
    "title": "千香",
-   "value": 3561.48
+   "value": 3561.51
   },
   {
    "rank": 17,
@@ -106,12 +106,12 @@
   {
    "rank": 19,
    "title": "蜀锦人家",
-   "value": 3556.71
+   "value": 3556.7
   },
   {
    "rank": 20,
    "title": "以法之名",
-   "value": 3556.45
+   "value": 3556.43
   }
  ],
  "samples": [
@@ -346,9 +346,17 @@
    "weekValue": 4460.68,
    "yearRank": 10,
    "yearValue": 3296.43
+  },
+  {
+   "date": "2026-10-20",
+   "hm": "03:31",
+   "weekRank": 1,
+   "weekValue": 4461.64,
+   "yearRank": 10,
+   "yearValue": 3296.55
   }
  ],
- "fetchedAt": "2026-10-19T19:16:14.574Z",
- "lastRun": "2026-10-19T19:16:14.574Z",
+ "fetchedAt": "2026-10-19T19:31:11.448Z",
+ "lastRun": "2026-10-19T19:31:11.448Z",
  "count": 20
 }
