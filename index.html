@@ -952,8 +952,9 @@ const CARDS = [
   { k: 'epAvg',     name: '集均播放量',     c: 'var(--ember)', ico: 'M4 20V8h4v12H4zm6 0V4h4v16h-4zm6 0v-8h4v8h-4z' },
   { k: 'yestVv',    name: '昨日全天播放',   c: 'var(--gold)',  ico: 'M5 3h14v4a7 7 0 01-14 0V3zm2 12h10v3H7v-3z' },
   { k: 'baiduIdx',  name: '百度指数·最新',  c: '#ffbe6a',      ico: 'M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z' },
+  { k: 'bbWeek',    name: '七日拉新榜',     c: '#7ee0c0',      ico: 'M5 3h14v4a7 7 0 01-14 0V3zm2 12h10v3H7v-3z' },
+  { k: 'bbYear',    name: '年度拉新榜',     c: 'var(--gold)',  ico: 'M12 2l2.6 6.3H21l-5.2 4.1 1.9 6.6L12 15.3 6.3 19l1.9-6.6L3 8.3h6.4z' },
   { k: 'ky',        name: '酷云实时收视',   c: '#ff8ab7',      ico: 'M3 5h18v11H3V5zm5 13h8v2H8v-2z' },
-  { k: 'dbHot',     name: '豆瓣热门电视榜', c: '#3aa1ff',      ico: 'M6 4h12v3H6V4zm1 5h10v2H7V9zm1 5h8v3H8v-3z' },
   { k: 'douban',    name: '豆瓣评分',       c: '#5fd4a3',      ico: 'M4 4h16v4H4V4zm0 6h16v10H4V10z' }
 ];
 
@@ -986,9 +987,8 @@ function cardVals() {
       return y ? { v: +(y.vvCnt / 1e4).toFixed(1), u: '万', sub: '当日累计 ' + wan(y.totalVv) }
                : { v: null, sub: '昨日还没有本剧的逐日记录' };
     })(),
-    dbHot:    { v: S.douban?.dbRank, u: S.douban?.dbRank ? '名' : '',
-                sub: S.douban?.dbRank ? '实时热度值 ' + fmt(S.douban.hotScore) + ' · ' + (S.douban.rankTitle || '热门电视')
-                     : (S.douban ? '当前不在豆瓣电视实时榜' : '榜单未取到') },
+    bbWeek:   bbCardVal('week', '过去 7 天会员开通热度'),
+    bbYear:   bbCardVal('year', '过去 365 天会员开通热度'),
     douban:   { v: S.douban ? (S.douban.count >= 5 && S.douban.score ? S.douban.score.toFixed(1) : (S.douban.noRate || '暂无评分')) : null,
                 sub: S.douban ? '短评 ' + fmt(S.douban.cmt) + ' · 长评 ' + fmt(S.douban.review) : '' },
     ky:       { v: S.kuyun ? (S.kuyun.rating * 100).toFixed(4) : null, u: S.kuyun ? '%' : '',
@@ -1482,11 +1482,28 @@ async function loadBillboard() {
   } catch (e) {
     BB.note = '暂无数据';
   }
-  renderBillboard();
+  /* 两张 KPI 卡吃的是同一份 BB，所以这里也要重画 KPI —— 否则首屏 KPI 先出 '--'，
+     json 回来了卡片不动，得等下一次 renderKPI 才亮。 */
+  renderBillboard(); renderKPI();
 }
 function bbStamp() {
   const s = bjStamp(BB.at);
   return s ? ' · 最后一次采集 ' + s : '';
+}
+/* 两张 KPI 卡共用一个取值函数：which 只决定读 latest 里的哪一对字段。
+   名次是反的 —— 数字变小才是前进，所以要取负再交给 delta，才会落进"涨=红"。 */
+function bbCardVal(which, rule) {
+  const L = BB.latest;
+  if (!L) return { v: null, sub: BB.note || '暂无数据' };
+  const rank = which === 'week' ? L.weekRank : L.yearRank;
+  const val = which === 'week' ? L.weekValue : L.yearValue;
+  const p = BB.samples.length > 1 ? BB.samples[BB.samples.length - 2] : null;
+  const pr = p ? (which === 'week' ? p.weekRank : p.yearRank) : null;
+  const mv = (rank == null || pr == null) ? null : pr - rank;
+  const hhmm = BB.at ? bjStamp(BB.at).slice(-5) : '';
+  return { v: rank, u: rank == null ? '' : '名', d: mv, dl: mv == null ? null : '较上一采样',
+           sub: (val == null ? '不在前 20' : '畅销度 ' + fmt(val) + '万') + ' · ' + rule +
+                (hhmm ? ' · ' + hhmm + ' 采样' : '') };
 }
 function renderBillboard() {
   const em = document.getElementById('bbEmpty');
@@ -1516,16 +1533,17 @@ function renderBillboard() {
     const cls = d > 0 ? 'up' : 'down';
     return `<span class="delta ${cls}">${d > 0 ? '▲' : '▼'} ${Math.abs(d)}${unit || ''}</span>`;
   };
-  const first = S[0] || L;
-  /* 名次是反的：数字变小才是前进，所以喂给 delta 前先取负，让它落进"涨=红"。 */
-  const rankMove = (L.weekRank == null || first.weekRank == null)
-    ? null : first.weekRank - L.weekRank;
+  /* 涨跌一律对「上一采样点」，也就是上一格（半小时）—— 和上面两张 KPI 卡同一个基准。
+     原来这里对的是曲线窗口最老那一点（最多 72 格 ≈ 一天半），▲3.46 到底跟谁比没人看得出来。 */
+  const prev = S.length > 1 ? S[S.length - 2] : null;
+  /* 名次是反的：数字变小才是前进，喂给 delta 前先取负，让它落进"涨=红"。 */
+  const rankMove = (L.weekRank == null || !prev || prev.weekRank == null)
+    ? null : prev.weekRank - L.weekRank;
   rows.innerHTML =
     row('7 日榜名次', `<b style="color:var(--gold)">第 ${L.weekRank ?? '--'} 名</b>` +
         (rankMove == null ? '' : delta(rankMove, 0, '位'))) +
-    row('畅销度', fmt(L.weekValue) + '<span class="u">万</span>' + delta(L.weekValue, first.weekValue)) +
+    row('畅销度', fmt(L.weekValue) + '<span class="u">万</span>' + delta(L.weekValue, prev && prev.weekValue)) +
     row('年度畅销榜', L.yearRank ? `第 ${L.yearRank} 名 · ${fmt(L.yearValue)}万` : '本剧不在年度榜前 20') +
-    row('榜首', BB.top.length ? `${esc(BB.top[0].title)} · ${fmt(BB.top[0].value)}万` : '--') +
     row('今日采样', (() => {
       const today = BB.samples.filter(s => s.date === L.date).length;
       return today + ' 点 · 截至 ' + esc(L.hm);
