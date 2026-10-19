@@ -1559,7 +1559,7 @@ function renderBillboard() {
     row('年度畅销榜', L.yearRank ? `第 ${L.yearRank} 名 · ${fmt(L.yearValue)}万` : '本剧不在年度榜前 20') +
     row('今日采样', (() => {
       const today = BB.samples.filter(s => s.date === L.date).length;
-      return today + ' 点 · 截至 ' + esc(L.hm);
+      return today + ' 条 · 截至 ' + esc(L.hm);
     })());
 
   const cv = document.getElementById('bbChart');
