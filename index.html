@@ -666,8 +666,7 @@ function applyVv(r) {
   if (!r || r.vvCnt == null) return;
   const p = S.play || (S.play = {});
   p.todayRaw = r.vvCnt;
-  p.todayVv = (r.vvCnt / 1e4).toFixed(2);
-  if (r.totalVv != null) { p.totalVv = r.totalVv; p.totalTxt = (r.totalVv / 1e4).toFixed(2); }
+  if (r.totalVv != null) p.totalVv = r.totalVv;
   if (r.marketShare) p.share = String(r.marketShare).replace('%', '');
   if (r.avgEpVvWithUnit && r.avgEpVvWithUnit.value) {
     p.epAvg = r.avgEpVvWithUnit.value; p.epAvgTo = '实时（含未更新集）';
@@ -690,7 +689,7 @@ function playVal(k) {
 const SLOW_VV = 60e3;
 let slowVv = { at: 0, v: null };
 function slowVals() {
-  const v = { totalVv: playVal('totalVv'), totalTxt: playVal('totalTxt'),
+  const v = { totalVv: playVal('totalVv'),
               todayRaw: playVal('todayRaw'), epAvg: playVal('epAvg'), epAvgTo: playVal('epAvgTo') };
   if (Date.now() - slowVv.at >= SLOW_VV || (v.totalVv && !slowVv.v?.totalVv)) slowVv = { at: Date.now(), v };
   return slowVv.v;
@@ -719,10 +718,8 @@ async function loadSsr(force = false) {
      市占那两个字段反过来：它的 .value 是嵌套对象 {value:"0.2277"}，只有 valueUnit.value 是能用的百分数。 */
   const toWan = x => { const v = +x?.value; return v ? (v / 1e4).toFixed(2) : null; };
   if (pl.todayTotalPlayVvCnt) S.ssrPlay = {
-    todayVv:  toWan(pl.todayTotalPlayVvCnt?.nowValueWithUnit),
     todayRaw: pl.todayTotalPlayVvCnt?.nowValueWithUnit?.value || null,
     totalVv:  pl.todayTotalPlayVvCnt?.totalValueWithUnit?.value || null,
-    totalTxt: toWan(pl.todayTotalPlayVvCnt?.totalValueWithUnit),
     share:    pl.todayTotalMarketShare?.nowValueWithUnit?.valueUnit?.value || null,
     shareMax: pl.todayTotalMarketShare?.maxValueWithUnit?.valueUnit?.value || null,
     epAvg:    toWan(pl.episodeAveragePlay?.nowValueWithUnit),
@@ -941,6 +938,15 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&am
 const row = (k, v) => '<div class="row"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>';
 const fmt = n => n == null ? '--' : Number(n).toLocaleString('zh-CN');
 const wan = n => n == null ? '--' : (n >= 1e8 ? (n / 1e8).toFixed(2) + ' 亿' : (n / 1e4).toFixed(1) + ' 万');
+/* KPI 大数字用的播放量：吃原始整数自己除，过亿换「亿」。单位必须跟数字一起返回，
+   因为卡片上那个「万」字原来是写死的，灯塔自己在过亿那刻切展示串（见 loadSsr 注释），
+   我们只读 .value，所以切换得在这里做。
+   返回字符串而不是数字：renderKPI 靠小数位决定补几个 0，Number("1.00") 会把尾零吃掉，
+   刚过亿那一刻就显示成 "1 亿"。 */
+const vvCard = raw => { const v = +raw;
+  return v ? (v >= 1e8 ? { v: (v / 1e8).toFixed(2), u: '亿' }
+                       : { v: (v / 1e4).toFixed(2), u: '万' })
+           : { v: null, u: '' }; };
 const tidyCjk = s => (s || '').replace(/([一-龥])[ \u3000]+(?=[一-龥])/g, '$1');
 function pad2(n) { return String(n).padStart(2, '0'); }
 
@@ -969,13 +975,15 @@ function cardVals() {
     youkuHot: { v: now, d: yPeak && now ? now - yPeak : null, dl: '对昨日峰值',
                 sub: (hotAt ? '采样于 ' + hotAt.slice(11, 16) : '热度读取中') +
                      (base ? ' · 历史最高 ' + fmt(base) + (baseAt ? ' · ' + baseAt.slice(0, 16) : '') : '') },
-    todayVv:  { v: playVal('todayVv'), u: playVal('todayVv') ? '万' : '',
-                sub: playVal('todayRaw') ? '原始 ' + fmt(playVal('todayRaw')) : '播放量接口读取中' },
+    todayVv:  (() => { const c = vvCard(playVal('todayRaw'));
+                return { v: c.v, u: c.u,
+                         sub: playVal('todayRaw') ? '原始 ' + fmt(playVal('todayRaw')) : '播放量接口读取中' }; })(),
     totalVv:  (() => {
-      const t = sv.totalVv, txt = sv.totalTxt, raw = sv.todayRaw;
+      const t = sv.totalVv, raw = sv.todayRaw;
       if (!t) return { v: null, sub: '播放量接口读取中' };
+      const c = vvCard(t);
       /* 开播首日累计就等于当日数，两个卡片数字一样是正常的，写出来免得看着像 BUG */
-      return { v: txt, u: '万', sub: '原始 ' + fmt(t) + (raw && t === raw ? ' · 开播首日与今日同量' : '') };
+      return { v: c.v, u: c.u, sub: '原始 ' + fmt(t) + (raw && t === raw ? ' · 开播首日与今日同量' : '') };
     })(),
     share:    { v: playVal('share'), u: playVal('share') ? '%' : '',
                 sub: playVal('shareMax') ? '历史最高 ' + playVal('shareMax') + '%' : '市占数据读取中' },
