@@ -387,6 +387,15 @@ footer a:active{transform:translateY(0)}
         <div class="empty" id="baiduEmpty">暂无数据</div></div>
       <div class="rows" id="baiduRows"></div>
     </div>
+
+    <div class="panel wide">
+      <div class="p-head"><div class="p-title"><i></i>优酷 7 日畅销榜</div>
+        <div class="p-note" id="bbNote">拉新口径 · 每半小时自动重采</div></div>
+      <div class="chart-box short"><canvas id="bbChart"></canvas>
+        <div class="empty" id="bbEmpty">暂无数据</div></div>
+      <div class="rows" id="bbRows"></div>
+      <div class="p-note" id="bbRule"></div>
+    </div>
   </div>
 
   <!-- ===================== SECONDARY ===================== -->
@@ -460,7 +469,7 @@ const CONFIG = {
      Cloudflare 免费额度 10 万请求/天是整个账号共享的，两个面板加所有轮询都算在里面，
      之前两边全程开秒级，一天烧到 9 万，直接 1027 停摆。
      heatLive/heat 是第二对、dengta 是日榜（10 分钟足够），节拍按下面的实测增速定。 */
-  refresh: { dengta: 600e3, live: 3e3, idle: 15e3, ssr: 10 * 60e3, heatLive: 120e3, heat: 600e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3, baidu: 300e3 },
+  refresh: { dengta: 600e3, live: 3e3, idle: 15e3, ssr: 10 * 60e3, heatLive: 120e3, heat: 600e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3, baidu: 300e3, bb: 300e3 },
   liveWindow: [18, 24],             // 北京电视黄金档那六小时，VV 给到最细；12:00 放量靠 idle=15 秒兜
   /* 热度快档按窗口给：12–14 是优酷每日放量（10-17 起 12:00 更 2 集），18–24 是电视黄金档
      带起来的第二段陡升。实测这两段涨 4.2 点/分，120 秒一档滞后 ≤9 点（0.11%）；
@@ -1302,7 +1311,7 @@ function renderHonor() {
 /* ============================================================
    图表
    ============================================================ */
-let hotChart, rankChart, liveChart, baiduChart;
+let hotChart, rankChart, liveChart, baiduChart, bbChart;
 const C_YOUKU = '#2ea8ff', C_GOLD = '#ffc861', C_DIM = '#8e97b0';
 
 const baseOpts = () => ({
@@ -1458,6 +1467,83 @@ function renderBaiduChart() {
 }
 
 /* ============================================================
+   优酷 7 日畅销榜（拉新口径）
+   ============================================================ */
+const BB = { latest: null, top: [], samples: [], at: '', note: '' };
+const BB_COL = '#7ee0c0';
+async function loadBillboard() {
+  try {
+    const r = await fetch('./billboard.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    if (!j.latest || j.latest.weekValue == null) throw new Error('empty');
+    BB.latest = j.latest; BB.top = j.top || []; BB.samples = j.samples || [];
+    BB.at = j.lastRun || j.fetchedAt || ''; BB.note = '';
+  } catch (e) {
+    BB.note = '暂无数据';
+  }
+  renderBillboard();
+}
+function bbStamp() {
+  const s = bjStamp(BB.at);
+  return s ? ' · 最后一次采集 ' + s : '';
+}
+function renderBillboard() {
+  const em = document.getElementById('bbEmpty');
+  const note = document.getElementById('bbNote');
+  const rows = document.getElementById('bbRows');
+  const rule = document.getElementById('bbRule');
+  const L = BB.latest;
+  if (!L) {
+    if (em) em.style.display = 'grid';
+    if (note) note.textContent = '拉新口径 · 暂无数据';
+    if (rows) rows.innerHTML = '';
+    if (rule) rule.innerHTML = '';
+    if (bbChart) { bbChart.destroy(); bbChart = null; }
+    return;
+  }
+  if (em) em.style.display = 'none';
+  if (note) note.textContent = '拉新口径 · 云端每半小时重采' + bbStamp();
+  if (rule) rule.innerHTML = '口径：7 日畅销榜按<b>过去 7 天会员开通热度</b>排序（含会员云包场等），'
+    + '年度榜按过去 365 天。畅销度是平台内的<b>相对指数</b>，不是会员人数，只能横向比名次、不能换算成"拉了多少新"。';
+
+  /* 名次和畅销度两套量纲，只画畅销度；名次变化用文字给，别拿 y1 轴糊上去。 */
+  const S = BB.samples.slice(-72);
+  const delta = (a, b, unit) => {
+    if (a == null || b == null) return '';
+    const d = +(a - b).toFixed(2);
+    if (!d) return '<span class="delta flat">— 持平</span>';
+    const cls = d > 0 ? 'up' : 'down';
+    return `<span class="delta ${cls}">${d > 0 ? '▲' : '▼'} ${Math.abs(d)}${unit || ''}</span>`;
+  };
+  const first = S[0] || L;
+  /* 名次是反的：数字变小才是前进，所以喂给 delta 前先取负，让它落进"涨=红"。 */
+  const rankMove = (L.weekRank == null || first.weekRank == null)
+    ? null : first.weekRank - L.weekRank;
+  rows.innerHTML =
+    row('7 日榜名次', `<b style="color:var(--gold)">第 ${L.weekRank ?? '--'} 名</b>` +
+        (rankMove == null ? '' : delta(rankMove, 0, '位'))) +
+    row('畅销度', fmt(L.weekValue) + '<span class="u">万</span>' + delta(L.weekValue, first.weekValue)) +
+    row('年度畅销榜', L.yearRank ? `第 ${L.yearRank} 名 · ${fmt(L.yearValue)}万` : '本剧不在年度榜前 20') +
+    row('榜首', BB.top.length ? `${esc(BB.top[0].title)} · ${fmt(BB.top[0].value)}万` : '--') +
+    row('今日采样', (() => {
+      const today = BB.samples.filter(s => s.date === L.date).length;
+      return today + ' 点 · 截至 ' + esc(L.hm);
+    })());
+
+  const cv = document.getElementById('bbChart');
+  if (!S.length) { if (bbChart) { bbChart.destroy(); bbChart = null; } return; }
+  const o = baseOpts();
+  o.scales.x.ticks.callback = (v, i) => i % Math.ceil(S.length / 12) === 0 ? S[i].hm : '';
+  o.scales.y.title = { display: true, text: '畅销度（万）', color: C_DIM, font: { size: 10 } };
+  o.plugins.legend.display = false;
+  const ds = [{ label: '畅销度', data: S.map(s => s.weekValue), borderColor: BB_COL,
+    backgroundColor: 'rgba(126,224,192,.12)', borderWidth: 2, pointRadius: 0, tension: .2, fill: true, spanGaps: true }];
+  if (bbChart) { bbChart.data.labels = S.map(s => s.date.slice(5) + ' ' + s.hm); bbChart.data.datasets = ds; bbChart.options = o; bbChart.update('none'); }
+  else bbChart = new Chart(cv, { type: 'line', data: { labels: S.map(s => s.date.slice(5) + ' ' + s.hm), datasets: ds }, options: o });
+}
+
+/* ============================================================
    调度
    ============================================================ */
 const revealJobs = [];
@@ -1484,7 +1570,8 @@ async function refreshAll() {
     safe('剧云录', loadHeatAll),
     safe('豆瓣', loadDouban),
     safe('酷云', loadKuyun),
-    safe('央视节目单', loadEpg)
+    safe('央视节目单', loadEpg),
+    safe('畅销榜', loadBillboard)
   ]);
   stamp();
   btn.disabled = false; btn.innerHTML = '刷新全部数据';
@@ -1561,7 +1648,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') dm.classList
 (async function boot() {
   decorate(); tickCountdown(); setInterval(tickCountdown, 1000);
   renderKPI(); renderBaiduChart(); renderHonor();
-  loadBaiduIndex();
+  loadBaiduIndex(); loadBillboard();
   await refreshAll();
   liveLoop();
   every(CONFIG.refresh.dengta, () => safe('灯塔', loadDengta).then(stamp), true);
@@ -1577,6 +1664,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') dm.classList
      新数也要人手动刷新才看得见。挂进注册表按 5 分钟一轮。
      这条不占 Cloudflare 额度：`./baidu-index.json` 和面板同源，直接 fetch 不过代理。 */
   every(CONFIG.refresh.baidu,  () => safe('百度指数', loadBaiduIndex), true);
+  /* 畅销榜和百度指数一样是同源静态 json，5 分钟看一次够用 —— 上游本来就半小时才动一格。 */
+  every(CONFIG.refresh.bb,     () => safe('畅销榜', loadBillboard), true);
   /* 回前台只让 revealJobs 按"各自周期到点没到点"补，不要再无脑全量。
      原来这里挂了一句 `if (Date.now() - src['灯塔'].at > 90e3) refreshAll()`：
      src['灯塔'].at 只有 600 秒一轮的 loadDengta 会写，所以切回来几乎必然判定"太老"，
