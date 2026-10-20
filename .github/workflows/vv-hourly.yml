@@ -1,0 +1,92 @@
+# 灯塔「正片播放 · 分时」采集 —— 嫁金钗
+#
+# 这个接口只回"今天到此刻"的分时格子，昨天的拿不到（showDate / date / bizDate /
+# queryDate / dateRange 五个参数 2026-10-20 实测全部被忽略），所以历史必须靠这里
+# 一小时一小时攒出来 —— 少跑一天，那一天就永久只有日累计、没有分时。
+#
+# 前置（一次性）：
+#   1. Settings → Actions → General → Workflow permissions → Read and write
+#   2. 本文件放 .github/workflows/vv-hourly.yml，fetch_vv_hourly.mjs 放仓库根
+#   3. Worker 那条全天闹钟（*/30 * * * *）的 BILLBOARD_TARGETS 里加上本文件，
+#      它才会被敲门；不加就永远不自动跑，手点仍然可用。
+#
+# 节拍：跟着畅销榜那条全天闹钟走，但**一小时只真跑一拍** —— 下面「要不要跑」用
+# UTC 分钟 <30 把 :30 那一拍挡掉。挡掉不心疼：每次真跑都是把当天已闭合的格子
+# 整份重读一遍，所以漏掉几个格子只是当天曲线晚一格长出来，当天午夜前只要成功一拍，
+# 那一天就有 0点-1点 … 22点-23点 共 23 格。
+# ⚠ 23点-0点 那一格当天拿不到（过 0 点它算昨天，而接口只回今天），脚本改到**第二天**
+#    用当天终值倒推补上，标 derived。不能当天算：逐日那行比逐时慢一截，
+#    10-20 18:24 实测 Σ(0点-17点)=5,120.1 万 > 同一分钟的当日累计 5,030.3 万，
+#    当天做减法会得到负数。
+# 24 拍/天 = 最多 24 个 commit ≈ 每小时一次 Pages 重建，和百度指数那条一个量级。
+#
+# ⚠ 这条 schedule 是备份档、实际不会响（GitHub 给他账号投递定时事件早就停了）。
+#    分钟故意取 11/41，和主闹钟的 :00/:30、百度那条的格子都错开，
+#    免得同一分钟撞进 concurrency 组被 cancel-in-progress 自己掐掉。
+
+name: dengta-vv-hourly
+
+on:
+  schedule:
+    - cron: '11,41 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  # 这里没有读 run 历史的护栏（护栏看的是钟表分钟），所以不用像另外两条那样显式给 actions: read。
+
+concurrency:
+  group: dengta-vv-hourly
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      VVH_OUT: vv-hourly.json
+      VVH_KEEP: '30'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 默认只拉 1 层，push 被拒要 rebase 时不够用；这仓库就几个文件，全量便宜。
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 手点永远放行 —— 不然他下午 14:45 点一下会被这道护栏吃掉，看起来像"点了没反应"。
+      - name: 要不要跑
+        id: need
+        run: |
+          m=$(date -u +%M)
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"; echo "手点，直接真跑（UTC 分 $m）"
+          elif [ "$m" -lt 30 ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"; echo "整点这一拍真跑（UTC 分 $m）"
+          else
+            echo "skip=true" >> "$GITHUB_OUTPUT"; echo "UTC 分 $m · 这半小时不重复攒，收工"
+          fi
+
+      # 走 Worker 的 /mtop 签名代理：灯塔那套接口要 mtop h5 现签的 sign，
+      # 浏览器端也是走同一个口子，所以这里不配任何 secret。
+      - name: 抓取
+        if: steps.need.outputs.skip != 'true'
+        run: node fetch_vv_hourly.mjs
+
+      - name: 提交结果
+        if: steps.need.outputs.skip != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          [ -f "$VVH_OUT" ] || { echo "::notice::没有产出文件，跳过提交（探测模式或抓取失败）"; exit 0; }
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$VVH_OUT"
+          git diff --cached --quiet && { echo "这一格和上一格完全相同，不提交"; exit 0; }
+          git commit -m "灯塔正片播放分时 $(TZ=Asia/Shanghai date '+%F %H:%M')"
+          # 同一个仓库现在有三条工作流推 main（百度指数 / 畅销榜 / 这条），闹钟都压在 :00 与 :30。
+          # 先把远端那一发接回来再推；接不住（同一文件冲突）就这一轮白跑，绝不 force。
+          git pull --rebase origin "$GITHUB_REF_NAME" || { echo "::warning::rebase 冲突，这一轮不推"; exit 1; }
+          git push
