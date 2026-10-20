@@ -117,4 +117,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$BAIDU_OUT"
           git diff --cached --quiet || git commit -m "嫁金钗百度指数 $(date -u +%F)"
+          # 同一个仓库还有畅销榜那个工作流在推 main：两个闹钟都是 */30，这一条早十几秒开跑，
+          # 它那 commit 落地的时刻正好卡在百度这边 checkout 之后、push 之前 → 非快进被拒。
+          # 所以先把远端那一发接回来再推。接不住（同一文件冲突）就这一轮白跑，绝不 force。
+          git pull --rebase origin "$GITHUB_REF_NAME" || { echo "::warning::rebase 冲突，这一轮不推"; exit 1; }
           git push
