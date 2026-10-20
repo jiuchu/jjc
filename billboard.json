@@ -5,113 +5,113 @@
  "asof": "2026-10-20",
  "latest": {
   "date": "2026-10-20",
-  "hm": "21:31",
-  "iso": "2026-10-20 21:31 +08",
+  "hm": "22:01",
+  "iso": "2026-10-20 22:01 +08",
   "weekRank": 1,
-  "weekValue": 4577.51,
+  "weekValue": 4587.83,
   "yearRank": 9,
-  "yearValue": 3428.82
+  "yearValue": 3443.06
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4577.51
+   "value": 4587.83
   },
   {
    "rank": 2,
    "title": "无可替代",
-   "value": 3667.47
+   "value": 3666.5
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 3631.02
+   "value": 3628.72
   },
   {
    "rank": 4,
    "title": "此处通往繁星",
-   "value": 3598.81
+   "value": 3598.6
   },
   {
    "rank": 5,
    "title": "九门",
-   "value": 3581.94
+   "value": 3581.07
   },
   {
    "rank": 6,
    "title": "一瓯春",
-   "value": 3580.82
+   "value": 3580.37
   },
   {
    "rank": 7,
    "title": "冬城猎凶",
-   "value": 3578.83
+   "value": 3579.51
   },
   {
    "rank": 8,
    "title": "月鳞绮纪",
-   "value": 3572.49
+   "value": 3572.62
   },
   {
    "rank": 9,
    "title": "翘楚",
-   "value": 3570.95
+   "value": 3571.1
   },
   {
    "rank": 10,
    "title": "悬案",
-   "value": 3569.35
+   "value": 3569.4
   },
   {
    "rank": 11,
-   "title": "难哄",
-   "value": 3569.02
+   "title": "当我飞奔向你",
+   "value": 3569.08
   },
   {
    "rank": 12,
-   "title": "当我飞奔向你",
-   "value": 3569.01
+   "title": "难哄",
+   "value": 3569.07
   },
   {
    "rank": 13,
    "title": "春花焰",
-   "value": 3567.44
+   "value": 3567.54
   },
   {
    "rank": 14,
    "title": "入青云",
-   "value": 3566.89
+   "value": 3566.94
   },
   {
    "rank": 15,
    "title": "师兄太稳健",
-   "value": 3565.56
+   "value": 3565.67
   },
   {
    "rank": 16,
-   "title": "千香",
-   "value": 3564.5
+   "title": "藏海传",
+   "value": 3564.63
   },
   {
    "rank": 17,
-   "title": "藏海传",
-   "value": 3564.47
+   "title": "千香",
+   "value": 3564.63
   },
   {
    "rank": 18,
    "title": "良辰好景知几何",
-   "value": 3563.2
+   "value": 3563.43
   },
   {
    "rank": 19,
    "title": "蜀锦人家",
-   "value": 3560.83
+   "value": 3561.01
   },
   {
    "rank": 20,
    "title": "以法之名",
-   "value": 3560.3
+   "value": 3560.59
   }
  ],
  "samples": [
@@ -682,9 +682,17 @@
    "weekValue": 4577.51,
    "yearRank": 9,
    "yearValue": 3428.82
+  },
+  {
+   "date": "2026-10-20",
+   "hm": "22:01",
+   "weekRank": 1,
+   "weekValue": 4587.83,
+   "yearRank": 9,
+   "yearValue": 3443.06
   }
  ],
- "fetchedAt": "2026-10-20T13:25:31.238Z",
- "lastRun": "2026-10-20T13:31:11.066Z",
+ "fetchedAt": "2026-10-20T14:01:09.798Z",
+ "lastRun": "2026-10-20T14:01:09.798Z",
  "count": 20
 }
