@@ -117,8 +117,19 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$BAIDU_OUT"
           git diff --cached --quiet || git commit -m "嫁金钗百度指数 $(date -u +%F)"
-          # 同一个仓库还有畅销榜那个工作流在推 main：两个闹钟都是 */30，这一条早十几秒开跑，
-          # 它那 commit 落地的时刻正好卡在百度这边 checkout 之后、push 之前 → 非快进被拒。
-          # 所以先把远端那一发接回来再推。接不住（同一文件冲突）就这一轮白跑，绝不 force。
-          git pull --rebase origin "$GITHUB_REF_NAME" || { echo "::warning::rebase 冲突，这一轮不推"; exit 1; }
-          git push
+          # 同一个仓库三条工作流都在推 main（这条写的是 baidu-index.json），实测两发落地只差 1~4 秒。
+          # pull --rebase 只挡得住"rebase 之前别人已经推完"那一半，挡不住 rebase 之后、
+          # push 之前那一秒：10-20 21:31 那次红叉就是这个 —— 日志里 rebase 报 up to date，
+          # 紧接着 push 撞上别人刚推的 25fb733，报 cannot lock ref。所以整段带随机退避重试。
+          # 这条一天只真 commit 一次（asof 前进才写），丢了明天那格照样补得上。
+          n=0
+          while [ "$n" -lt 4 ]; do
+            n=$((n+1))
+            if git pull --rebase origin "$GITHUB_REF_NAME" && git push; then
+              echo "第 $n 次尝试推上去了"; exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 6 + 3))
+          done
+          echo "::error::四次都没挤进 main，这一轮不推（红叉留到真出事的时候才看）"
+          exit 1
