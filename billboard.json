@@ -5,113 +5,113 @@
  "asof": "2026-10-20",
  "latest": {
   "date": "2026-10-20",
-  "hm": "12:31",
-  "iso": "2026-10-20 12:31 +08",
+  "hm": "13:01",
+  "iso": "2026-10-20 13:01 +08",
   "weekRank": 1,
-  "weekValue": 4485.25,
+  "weekValue": 4494.88,
   "yearRank": 10,
-  "yearValue": 3328
+  "yearValue": 3334
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4485.25
+   "value": 4494.88
   },
   {
    "rank": 2,
    "title": "无可替代",
-   "value": 3666.37
+   "value": 3664.14
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 3626.96
+   "value": 3627.54
   },
   {
    "rank": 4,
    "title": "此处通往繁星",
-   "value": 3603.69
+   "value": 3604.45
   },
   {
    "rank": 5,
    "title": "一瓯春",
-   "value": 3586.51
+   "value": 3586.57
   },
   {
    "rank": 6,
    "title": "九门",
-   "value": 3584.11
+   "value": 3584.93
   },
   {
    "rank": 7,
    "title": "冬城猎凶",
-   "value": 3577.41
+   "value": 3577.14
   },
   {
    "rank": 8,
    "title": "月鳞绮纪",
-   "value": 3570.8
+   "value": 3570.91
   },
   {
    "rank": 9,
    "title": "翘楚",
-   "value": 3569.85
+   "value": 3569.88
   },
   {
    "rank": 10,
    "title": "悬案",
-   "value": 3568.37
+   "value": 3568.46
   },
   {
    "rank": 11,
-   "title": "难哄",
-   "value": 3568.19
+   "title": "当我飞奔向你",
+   "value": 3568.26
   },
   {
    "rank": 12,
-   "title": "当我飞奔向你",
-   "value": 3568.18
+   "title": "难哄",
+   "value": 3568.25
   },
   {
    "rank": 13,
    "title": "春花焰",
-   "value": 3566.45
+   "value": 3566.54
   },
   {
    "rank": 14,
    "title": "入青云",
-   "value": 3565.47
+   "value": 3565.57
   },
   {
    "rank": 15,
    "title": "师兄太稳健",
-   "value": 3563.53
+   "value": 3563.62
   },
   {
    "rank": 16,
    "title": "千香",
-   "value": 3562.62
+   "value": 3562.82
   },
   {
    "rank": 17,
    "title": "藏海传",
-   "value": 3562
+   "value": 3562.18
   },
   {
    "rank": 18,
    "title": "良辰好景知几何",
-   "value": 3561
+   "value": 3561.21
   },
   {
    "rank": 19,
    "title": "蜀锦人家",
-   "value": 3558.12
+   "value": 3558.36
   },
   {
    "rank": 20,
    "title": "以法之名",
-   "value": 3557.61
+   "value": 3557.72
   }
  ],
  "samples": [
@@ -514,9 +514,17 @@
    "weekValue": 4485.25,
    "yearRank": 10,
    "yearValue": 3328
+  },
+  {
+   "date": "2026-10-20",
+   "hm": "13:01",
+   "weekRank": 1,
+   "weekValue": 4494.88,
+   "yearRank": 10,
+   "yearValue": 3334
   }
  ],
- "fetchedAt": "2026-10-20T04:31:09.327Z",
- "lastRun": "2026-10-20T04:31:09.327Z",
+ "fetchedAt": "2026-10-20T05:01:08.991Z",
+ "lastRun": "2026-10-20T05:01:08.991Z",
  "count": 20
 }
