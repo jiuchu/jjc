@@ -1,10 +1,16 @@
-# 百度指数重采 —— 嫁金钗
+# 百度指数重采 + 七麦下载量预估 —— 嫁金钗
 #
 # 前置（一次性，都在 GitHub 网页上设）：
 #   1. Settings → Secrets and variables → Actions → New repository secret，名字 BDUSS
+#      再加一条 QM_COOKIE（值 = 七麦那账号的 Cookie 一整行，USERINFO=...; AUTHKEY=...）
 #   2. Settings → Actions → General → Workflow permissions → Read and write
-#   3. 本文件放 .github/workflows/ 下，fetch_baidu_index.mjs 放仓库根
+#   3. 本文件放 .github/workflows/ 下，fetch_baidu_index.mjs 和 fetch_qimai.mjs 放仓库根
 #      （脚本和 index.html 必须同一个仓库根，跟《伟大的长征》那边一模一样）
+#
+# 10-21 起这个文件里有**两条采集**：上面 refresh 那格管百度指数，下面 qimai 那格管七麦。
+# 为什么挤在同一个文件里而不是单开一条 qimai.yml：单开就得让 Worker 多一个派发目标，
+# 而那意味着今晚刚部署完的版本再改一次；七麦一天只要一次，跟着百度这条已经跑通的闹钟
+# 走最省事。**代价**是这个文件的名字只说明了一半内容，改闹钟的人要知道两条都在里面。
 #
 # 看板读的是 index.html 同目录的 ./baidu-index.json，所以下面 BAIDU_OUT 默认就是仓库根。
 # 只有当你把嫁金钗塞进某个子目录（比如和长征共用一个仓库、站点在 /jiajinchai/ 下）时，
@@ -132,4 +138,113 @@ jobs:
             sleep $((RANDOM % 6 + 3))
           done
           echo "::error::四次都没挤进 main，这一轮不推（红叉留到真出事的时候才看）"
+          exit 1
+
+  # ============================================================
+  # 七麦「优酷视频 · 下载量预估」，一天一次
+  # ============================================================
+  #
+  # 为什么要开无头浏览器：那条接口上的 analysis 是七麦前端**现签**出来的，签的东西里
+  # 有整条查询串（含 sdate/edate）还掺了一个时刻。所以从浏览器里复制的那条链接钉死在
+  # 它自己那一窗，挪一天、截短一天都回 10602 —— 一天贴一条太麻烦了。既然算法就在他们
+  # 前端里，最稳的办法是让前端自己签：打开那个页面，把它自己发出的 /pred/download
+  # 响应接下来。fetch_qimai.mjs 的浏览器模式干的就是这件事，只需要登录 Cookie。
+  #
+  # 节拍：Worker 那个闹钟北京 11:00~20:30 每半小时敲一次这条工作流，所以下面用两道闸，
+  # 真跑一天只有一次：
+  #   ① 仓库里 qimai.json 的 edate 已经是昨天 → 直接 skip（装浏览器都不装）
+  #   ② 现在不在北京 11:00~16:59 → skip
+  # 为什么是 11 点以后：七麦按天结算，实测 10-20 那天 23:11 抓，最后一格还是 0 占位，
+  # 到 10-21 01:00 才出数。取到 0 占位时脚本会把那一格剥掉（edate 就不等于昨天），
+  # 下一格接着试 —— 所以 11:00 那格失败不要紧，11:30、12:00 自己会补上。
+  #
+  # ⚠ 第一次跑带着实验性质：机房 IP 打开七麦它给不给真页面，本地没法替它保证。
+  #   （拿粘来的签名直调接口这条，用 Worker 转发从机房 IP 是取得到数的，但那是另一条路。）
+  #   日志里「响应不是 JSON」= 被拦成页面了；code=10011 = Cookie 过期，重新配 QM_COOKIE 就好。
+  #   这两种都不会写文件，页面上留的是上一份好档案，只是那行状态字样停在旧时刻。
+  qimai:
+    needs: refresh
+    # 上面百度那一格红了（推送四次没挤进去、或者百度自己没出数）不该拖累这一格：
+    # always() 让它照跑。
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      QIMAI_OUT: qimai.json
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 要不要跑
+        id: need
+        env:
+          QM_COOKIE: ${{ secrets.QM_COOKIE }}
+        run: |
+          want=$(TZ=Asia/Shanghai date -d "yesterday" +%F)
+          have=$(node -p "try{JSON.parse(require('fs').readFileSync('$QIMAI_OUT','utf8')).edate}catch(e){''}")
+          # 10# 是必需的：date +%H 给的是 08、09 这种带零的串，不写基数会被当八进制
+          hh=$((10#$(TZ=Asia/Shanghai date +%H)))
+          # 这一句必须写成 if 块，不能写成 `[ -z "$QM_COOKIE" ] && echo ...`：
+          # Actions 的默认 shell 是 bash -e，那种写法的返回码就是 `[ -z ]` 的返回码，
+          # secret **配好了**反而会让这一步红着退出。
+          if [ -z "$QM_COOKIE" ]; then
+            echo "::warning::还没配 QM_COOKIE 这个 secret，下面注定起不来（先红了看一眼日志，别猜）"
+          fi
+          echo "仓库里 edate=$have（期望 $want）· 现在北京 $hh 点"
+          if [ "$have" = "$want" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"; echo "已经是昨天的数，这格不装浏览器"
+          elif [ "$hh" -lt 11 ] || [ "$hh" -gt 16 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"; echo "不在 11:00~16:59 的窗里，这格不去敲七麦"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 装 Playwright + Chromium
+        if: steps.need.outputs.skip != 'true'
+        run: npm i -D playwright && npx playwright install --with-deps chromium
+
+      - name: 抓取
+        if: steps.need.outputs.skip != 'true'
+        env:
+          QM_MODE: browser
+          QM_APPID: '336141475'
+          QM_COOKIE: ${{ secrets.QM_COOKIE }}
+        run: node fetch_qimai.mjs
+
+      - name: 提交结果
+        if: steps.need.outputs.skip != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 这里不能用 `[ -f ]`：qimai.json 本来就在仓库里，取不到数的时候它也在。
+          # 判据是"内容有没有变"—— 脚本失败一律不写文件，所以没变 = 这一轮没新数，
+          # 空提交一次都别做。用 status --porcelain 而不是 diff --quiet：
+          # 万一这个文件还没进过仓库（他先传 yml 后传 json 的那一拍），未跟踪的文件
+          # 在 diff 里是"没变化"，就会被这句话静默吞掉。
+          if ! git status --porcelain -- "$QIMAI_OUT" | grep -q .; then
+            echo "::notice::七麦这份没有变化（多半是昨天那格还在结算），这一轮不提交"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$QIMAI_OUT"
+          git commit -m "嫁金钗下载量预估 $(date -u +%F)"
+          # 同一个仓库四条工作流都在推 main（billboard / vv-hourly / baidu-index / 这条），
+          # 10-20 21:31 那次红叉就是 rebase 之后、push 之前那一秒被别人插进去的。
+          # 这条一天只真 commit 一次，撞车窗口本来就窄；带上随机退避再试四次，
+          # 全丢了也不要紧 —— edate 没前进，下一格（半小时后）自己重来。
+          n=0
+          while [ "$n" -lt 4 ]; do
+            n=$((n+1))
+            if git pull --rebase origin "$GITHUB_REF_NAME" && git push; then
+              echo "第 $n 次尝试推上去了"; exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 6 + 3))
+          done
+          echo "::error::四次都没挤进 main，这一轮不推（下一格接着试）"
           exit 1
