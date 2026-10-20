@@ -10,10 +10,14 @@
 #   3. Worker 那条全天闹钟（*/30 * * * *）的 BILLBOARD_TARGETS 里加上本文件，
 #      它才会被敲门；不加就永远不自动跑，手点仍然可用。
 #
-# 节拍：跟着畅销榜那条全天闹钟走，但**一小时只真跑一拍** —— 下面「要不要跑」用
-# UTC 分钟 <30 把 :30 那一拍挡掉。挡掉不心疼：每次真跑都是把当天已闭合的格子
-# 整份重读一遍，所以漏掉几个格子只是当天曲线晚一格长出来，当天午夜前只要成功一拍，
-# 那一天就有 0点-1点 … 22点-23点 共 23 格。
+# 节拍：跟着畅销榜那条全天闹钟走，但**一小时只真跑一拍** —— 判据是「要不要跑」
+# 里读 json 自己的 lastRun（距上次成功落地不足 45 分钟就不跑），不再读 Runner 的墙钟。
+# 原来那句 date -u +%M 小于 30 有个洞：它读的是步骤开始执行那一刻的钟，Cloudflare 的
+# cron 早到几秒，:30 那一拍就翻进小于 30 那侧漏跑一次（10-20 21:31 的红叉就是这么来的）。
+# 挡掉不心疼：每次真跑都是把当天已闭合的格子整份重读一遍，所以漏掉几个格子只是当天
+# 曲线晚一格长出来，当天午夜前只要成功一拍，那一天就有 0点-1点 … 22点-23点 共 23 格。
+# 反过来，上一轮要是没推上去，lastRun 就还停在那儿，下一拍 gap 仍然大于 45 → 照跑，
+# 等于自带一次补投。
 # ⚠ 23点-0点 那一格当天拿不到（过 0 点它算昨天，而接口只回今天），脚本改到**第二天**
 #    用当天终值倒推补上，标 derived。不能当天算：逐日那行比逐时慢一截，
 #    10-20 18:24 实测 Σ(0点-17点)=5,120.1 万 > 同一分钟的当日累计 5,030.3 万，
@@ -60,13 +64,19 @@ jobs:
       - name: 要不要跑
         id: need
         run: |
-          m=$(date -u +%M)
           if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-            echo "skip=false" >> "$GITHUB_OUTPUT"; echo "手点，直接真跑（UTC 分 $m）"
-          elif [ "$m" -lt 30 ]; then
-            echo "skip=false" >> "$GITHUB_OUTPUT"; echo "整点这一拍真跑（UTC 分 $m）"
+            echo "skip=false" >> "$GITHUB_OUTPUT"; echo "手点，直接真跑"
           else
-            echo "skip=true" >> "$GITHUB_OUTPUT"; echo "UTC 分 $m · 这半小时不重复攒，收工"
+            # lastRun 是采集脚本写的、只有 push 成功才会前进，所以它同时是水位线。
+            # 文件还不存在（第一天）或读不出时间都算 9999 分钟 = 真跑。
+            gap=$(node -e 'try{const j=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));const t=Date.parse(j.lastRun||j.fetchedAt||"");console.log(isNaN(t)?9999:Math.floor((Date.now()-t)/6e4))}catch(e){console.log(9999)}' "$VVH_OUT")
+            case "$gap" in ""|*[!0-9]*) gap=9999;; esac
+            echo "距上次成功落地 $gap 分钟"
+            if [ "$gap" -lt 45 ]; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"; echo "刚落地过，这一拍不重复攒，收工"
+            else
+              echo "skip=false" >> "$GITHUB_OUTPUT"; echo "超过 45 分钟没落地，真跑"
+            fi
           fi
 
       # 走 Worker 的 /mtop 签名代理：灯塔那套接口要 mtop h5 现签的 sign，
@@ -86,7 +96,19 @@ jobs:
           git add "$VVH_OUT"
           git diff --cached --quiet && { echo "这一格和上一格完全相同，不提交"; exit 0; }
           git commit -m "灯塔正片播放分时 $(TZ=Asia/Shanghai date '+%F %H:%M')"
-          # 同一个仓库现在有三条工作流推 main（百度指数 / 畅销榜 / 这条），闹钟都压在 :00 与 :30。
-          # 先把远端那一发接回来再推；接不住（同一文件冲突）就这一轮白跑，绝不 force。
-          git pull --rebase origin "$GITHUB_REF_NAME" || { echo "::warning::rebase 冲突，这一轮不推"; exit 1; }
-          git push
+          # 同一个仓库三条工作流都在推 main（这条写的是 vv-hourly.json），实测两发落地只差 1~4 秒。
+          # pull --rebase 只挡得住"rebase 之前别人已经推完"那一半，挡不住 rebase 之后、
+          # push 之前那一秒：10-20 21:31 那次红叉就是这个 —— 日志里 rebase 报 up to date，
+          # 紧接着 push 撞上别人刚推的 25fb733，报 cannot lock ref。所以整段带随机退避重试。
+          # 这条丢一格不心疼：下一拍是把当天已闭合的格子整份重读一遍。
+          n=0
+          while [ "$n" -lt 4 ]; do
+            n=$((n+1))
+            if git pull --rebase origin "$GITHUB_REF_NAME" && git push; then
+              echo "第 $n 次尝试推上去了"; exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 6 + 3))
+          done
+          echo "::error::四次都没挤进 main，这一轮不推（红叉留到真出事的时候才看）"
+          exit 1
