@@ -110,6 +110,20 @@ jobs:
           git diff --cached --quiet && { echo "这一格和上一格数值完全相同，不提交"; exit 0; }
           git commit -m "畅销榜采样 $(TZ=Asia/Shanghai date '+%F %H:%M')"
           # 采样史全在这个 json 里。先 commit 再 rebase，工作树才是干净的；
-          # 接不住就这一轮白跑，绝不 force —— 覆盖掉攒了几天的曲线比少一个点严重得多。
-          git pull --rebase origin "$GITHUB_REF_NAME" || { echo "::warning::rebase 冲突，这一轮不推"; exit 1; }
-          git push
+          # 绝不 force —— 覆盖掉攒了几天的曲线比少一个点严重得多。
+          # 同一个仓库三条工作流都在推 main（这条写的是 billboard.json），实测两发落地只差 1~4 秒。
+          # pull --rebase 只挡得住"rebase 之前别人已经推完"那一半，挡不住 rebase 之后、
+          # push 之前那一秒：10-20 21:31 那次红叉就是这个 —— 日志里 rebase 报 up to date，
+          # 紧接着 push 撞上别人刚推的 25fb733，报 cannot lock ref。所以整段带随机退避重试。
+          # 这条比另外两条要紧：畅销榜是台阶式跳的，丢的那一发补不回来。
+          n=0
+          while [ "$n" -lt 4 ]; do
+            n=$((n+1))
+            if git pull --rebase origin "$GITHUB_REF_NAME" && git push; then
+              echo "第 $n 次尝试推上去了"; exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 6 + 3))
+          done
+          echo "::error::四次都没挤进 main，这一轮不推（红叉留到真出事的时候才看）"
+          exit 1
