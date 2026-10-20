@@ -404,6 +404,14 @@ footer a:active{transform:translateY(0)}
       <div class="rows" id="bbRows"></div>
       <div class="p-note" id="bbRule"></div>
     </div>
+
+    <div class="panel wide">
+      <div class="p-head"><div class="p-title"><i></i>优酷年度畅销榜</div>
+        <div class="p-note">按过去 365 天会员开通热度排序</div></div>
+      <div class="chart-box"><canvas id="bbYearChart"></canvas>
+        <div class="empty" id="bbYearEmpty">年度榜单明细采集中…</div></div>
+      <div class="p-note" id="bbYearRule"></div>
+    </div>
   </div>
 
   <!-- ===================== SECONDARY ===================== -->
@@ -1348,7 +1356,7 @@ function renderHonor() {
 /* ============================================================
    图表
    ============================================================ */
-let hotChart, rankChart, liveChart, baiduChart, bbChart, vvHourChart;
+let hotChart, rankChart, liveChart, baiduChart, bbChart, bbYearChart, vvHourChart;
 const C_YOUKU = '#2ea8ff', C_GOLD = '#ffc861', C_DIM = '#8e97b0';
 
 const baseOpts = () => ({
@@ -1633,7 +1641,7 @@ function renderBaiduChart() {
 /* ============================================================
    优酷 7 日畅销榜（拉新口径）
    ============================================================ */
-const BB = { latest: null, top: [], samples: [], at: '', note: '' };
+const BB = { latest: null, top: [], topYear: [], show: '', samples: [], at: '', note: '' };
 const BB_COL = '#7ee0c0';
 async function loadBillboard() {
   try {
@@ -1642,13 +1650,14 @@ async function loadBillboard() {
     const j = await r.json();
     if (!j.latest || j.latest.weekValue == null) throw new Error('empty');
     BB.latest = j.latest; BB.top = j.top || []; BB.samples = j.samples || [];
+    BB.topYear = j.topYear || []; BB.show = j.show || '';
     BB.at = j.lastRun || j.fetchedAt || ''; BB.note = '';
   } catch (e) {
     BB.note = '暂无数据';
   }
   /* 两张 KPI 卡吃的是同一份 BB，所以这里也要重画 KPI —— 否则首屏 KPI 先出 '--'，
      json 回来了卡片不动，得等下一次 renderKPI 才亮。 */
-  renderBillboard(); renderKPI();
+  renderBillboard(); renderYearBar(); renderKPI();
 }
 function bbStamp() {
   const s = bjStamp(BB.at);
@@ -1726,6 +1735,53 @@ function renderBillboard() {
     backgroundColor: 'rgba(126,224,192,.12)', borderWidth: 2, pointRadius: 0, tension: .2, fill: true, spanGaps: true }];
   if (bbChart) { bbChart.data.labels = S.map(s => s.date.slice(5) + ' ' + s.hm); bbChart.data.datasets = ds; bbChart.options = o; bbChart.update('none'); }
   else bbChart = new Chart(cv, { type: 'line', data: { labels: S.map(s => s.date.slice(5) + ' ' + s.hm), datasets: ds }, options: o });
+}
+
+/* 年度榜横条：和上面「优酷剧集热度榜」同一套画法 —— 本剧那条烫金，榜首那根最亮的蓝，
+   其余压暗，一眼看得出名次是挤在中间的。
+   只画前 12 条：20 根塞进这一格高度每根只剩几个像素，而年度榜前 20 名彼此只差几百，
+   压细了就成一片齐平的条子，反而看不出深浅。本剧名次始终写在下面那行字里，掉出 12 名也不会丢信息。 */
+function renderYearBar() {
+  const em = document.getElementById('bbYearEmpty');
+  const rule = document.getElementById('bbYearRule');
+  const rows = BB.topYear.slice(0, 12);
+  const L = BB.latest;
+  if (!rows.length) {
+    if (em) { em.style.display = 'grid'; em.textContent = '年度榜单明细 · 等下一次采集落地'; }
+    if (rule) rule.innerHTML = '';
+    if (bbYearChart) { bbYearChart.destroy(); bbYearChart = null; }
+    return;
+  }
+  if (em) em.style.display = 'none';
+  const mine = rows.map(r => r.title === (BB.show || CONFIG.title));
+  const inRows = mine.some(Boolean);
+  if (rule) {
+    const gap = (L && L.yearValue != null) ? +(rows[0].value - L.yearValue).toFixed(2) : null;
+    rule.innerHTML = '口径同上：年度畅销度是过去 365 天的<b>相对指数</b>，不是会员人数，只能横向比深浅。'
+      + (L && L.yearValue != null
+        ? `本剧 <b style="color:var(--gold)">${fmt(L.yearValue)}万</b> 排第 ${L.yearRank} 名`
+          + (inRows ? '' : '（不在画出的前 12 条内）')
+          + (gap == null ? '' : gap > 0 ? ` · 距榜首 ${fmt(gap)}万` : ' · 就是榜首')
+          + '。'
+        : '');
+  }
+  const labels = rows.map(r => `${r.rank}. ${r.title}`);
+  const bg = rows.map((r, i) => mine[i] ? C_GOLD : (i === 0 ? 'rgba(46,168,255,.85)' : 'rgba(46,168,255,.34)'));
+  const ds = [{ label: '年度畅销度', data: rows.map(r => r.value), backgroundColor: bg, borderRadius: 5, barThickness: 15 }];
+  const o = {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false },
+      tooltip: { backgroundColor: 'rgba(8,10,18,.92)', callbacks: {
+        label: c => '畅销度 ' + fmt(c.raw) + '万' + (mine[c.dataIndex] ? ' · 本剧' : '') } } },
+    scales: {
+      x: { title: { display: true, text: '年度畅销度（万）', color: C_DIM, font: { size: 10 } },
+           ticks: { color: C_DIM, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.06)' } },
+      y: { ticks: { color: rows.map((r, i) => mine[i] ? C_GOLD : '#c7cede'), font: { size: 11 } },
+           grid: { display: false } }
+    }
+  };
+  if (bbYearChart) { bbYearChart.data.labels = labels; bbYearChart.data.datasets = ds; bbYearChart.options = o; bbYearChart.update('none'); }
+  else bbYearChart = new Chart(document.getElementById('bbYearChart'), { type: 'bar', data: { labels, datasets: ds }, options: o });
 }
 
 /* ============================================================

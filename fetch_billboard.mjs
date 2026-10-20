@@ -136,6 +136,9 @@ const body = {
   asof: date,
   latest: { date, hm, iso, weekRank: w.rank, weekValue: w.value, yearRank: y.rank, yearValue: y.value },
   top: week.slice(0, 20).map((r, i) => ({ rank: i + 1, title: r.title, value: r.value })),
+  // 年度榜整份也落下来。过去只写我们自己那一格（yearRank/yearValue），
+  // 画横条就需要别人的长度。
+  topYear: year.slice(0, 20).map((r, i) => ({ rank: i + 1, title: r.title, value: r.value })),
   samples,
   fetchedAt: moved || !prev.fetchedAt ? now.toISOString() : prev.fetchedAt,
   lastRun: now.toISOString(),
