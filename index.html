@@ -381,6 +381,14 @@ footer a:active{transform:translateY(0)}
     </div>
 
     <div class="panel wide">
+      <div class="p-head"><div class="p-title"><i></i>正片播放量 · 分时</div>
+        <div class="p-note" id="vvHourNote">灯塔全网口径 · 每半小时自动重采</div></div>
+      <div class="chart-box short"><canvas id="vvHourChart"></canvas>
+        <div class="empty" id="vvHourEmpty">分时档案建立中…</div></div>
+      <div class="rows" id="vvHourRows"></div>
+    </div>
+
+    <div class="panel wide">
       <div class="p-head"><div class="p-title"><i></i>国民搜索热度逐日</div>
         <div class="p-note" id="baiduNote"></div></div>
       <div class="chart-box short"><canvas id="baiduChart"></canvas>
@@ -469,7 +477,7 @@ const CONFIG = {
      Cloudflare 免费额度 10 万请求/天是整个账号共享的，两个面板加所有轮询都算在里面，
      之前两边全程开秒级，一天烧到 9 万，直接 1027 停摆。
      heatLive/heat 是第二对、dengta 是日榜（10 分钟足够），节拍按下面的实测增速定。 */
-  refresh: { dengta: 600e3, live: 3e3, idle: 15e3, ssr: 10 * 60e3, heatLive: 120e3, heat: 600e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3, baidu: 300e3, bb: 300e3 },
+  refresh: { dengta: 600e3, live: 3e3, idle: 15e3, ssr: 10 * 60e3, heatLive: 120e3, heat: 600e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3, baidu: 300e3, bb: 300e3, vvh: 300e3 },
   liveWindow: [21.4, 23.5],         // VV 秒级只给 CCTV-8 那两集：21:24 提要、21:29–22:19、22:21–23:11（10-19/20/21 三天节目单同一格）
   /* ⚠ 这一档原先是 [18, 24]，理由是 10-16 首播那几天优酷 18:00 放量，注释却写着"电视黄金档"——
      可 CCTV-8 从第一天起就是 21:29 开，18:00 从来不是电视档。10-17 网播挪到中午 12:00 之后，
@@ -1327,7 +1335,7 @@ function renderHonor() {
 /* ============================================================
    图表
    ============================================================ */
-let hotChart, rankChart, liveChart, baiduChart, bbChart;
+let hotChart, rankChart, liveChart, baiduChart, bbChart, vvHourChart;
 const C_YOUKU = '#2ea8ff', C_GOLD = '#ffc861', C_DIM = '#8e97b0';
 
 const baseOpts = () => ({
@@ -1421,6 +1429,126 @@ function renderLiveChart() {
   o.scales.y.title = { display: true, text: '优酷热度', color: C_DIM, font: { size: 10 } };
   if (liveChart) { liveChart.data.labels = labels; liveChart.data.datasets = ds; liveChart.options = o; liveChart.update('none'); }
   else liveChart = new Chart(cv, { type: 'line', data: { labels, datasets: ds }, options: o });
+}
+
+/* ============================================================
+   正片播放量 · 分时（灯塔全网口径）
+   ============================================================ */
+/* 别和上面那格「今日热度分时」混：那格是优酷平台热度、本页在浏览器里自己攒的；
+   这格是灯塔的「正片播放量」按小时切开，platform 用 ALL（全网），
+   跟优酷单平台那套数不是一回事。
+
+   数据只有一个来源：vv-hourly.json，每半小时攒一格，本页 5 分钟读一次。
+   ⚠ 这里刻意不画"当前这一小时"。原本打算用 liveLoop 已经在轮的当日累计减去
+      各小时之和倒推出来，10-20 18:24 一测就废了：Σ(0点-17点) = 5,120.1 万，
+      同一分钟的当日累计只有 5,030.3 万 —— 灯塔这两套行本身对不上（逐日那行慢一截），
+      做减法得到负数，硬画就是假数。所以最后一格永远是"上一个完整小时"，
+      文案里写清楚。同理，当日累计那两张卡在上方的 KPI 里看，别拿这格的各格之和去对。 */
+const VVH = { days: {}, asof: '', at: '', has: false };
+/* 灯塔的 showDate 是北京日的 YYYYMMDD。海外访客按浏览器本地时区取"今天"会错一天，
+   所以这里一律走 UTC+8，不碰 getFullYear/getMonth。 */
+const bjYmd = (t = Date.now()) => new Date(t + 8 * 3600e3).toISOString().slice(0, 10).replace(/-/g, '');
+function vvHoursOf(key) {
+  return ((((VVH.days || {})[key] || {}).hours) || []).slice().sort((a, b) => a.from - b.from);
+}
+async function loadVvHourly() {
+  try {
+    const r = await fetch('./vv-hourly.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    if (!j.days || !Object.keys(j.days).length) throw new Error('empty');
+    VVH.days = j.days; VVH.asof = String(j.asof || ''); VVH.has = true;
+    VVH.at = j.lastRun || j.fetchedAt || '';
+  } catch (e) {
+    /* 文件还没有 ≠ 链路坏了：第一天跑通之前必然缺。所以不进 src 表、
+       不在页顶那条报错里点名，只在格子自己那行写"档案建立中"。 */
+    VVH.has = false;
+  }
+  renderVvHour();
+}
+function renderVvHour() {
+  const cv = document.getElementById('vvHourChart');
+  const em = document.getElementById('vvHourEmpty');
+  const noteEl = document.getElementById('vvHourNote');
+  const rowsEl = document.getElementById('vvHourRows');
+  if (!cv) return;
+  const md = k => k.slice(4, 6) + '/' + k.slice(6, 8);
+  const kToday = bjYmd(), kYest = bjYmd(Date.now() - 864e5);
+  /* 零点过后到 0点-1点 那一格被攒进来之前，"今天"还是一格都没有。
+     那时候退回画刚结束的那一天，别让整条曲线凭空消失。 */
+  let key = kToday, prevKey = kYest;
+  let bars = vvHoursOf(key);
+  if (!bars.length) { key = kYest; prevKey = bjYmd(Date.now() - 2 * 864e5); bars = vvHoursOf(key); }
+  const line = vvHoursOf(prevKey);
+  if (!bars.length) {
+    em.style.display = 'grid'; rowsEl.innerHTML = '';
+    noteEl.textContent = '灯塔全网口径 · 分时档案建立中';
+    if (vvHourChart) { vvHourChart.destroy(); vvHourChart = null; }
+    return;
+  }
+  em.style.display = 'none';
+  const labels = []; for (let i = 0; i < 24; i++) labels.push(i + '点');
+  const w = h => +(h.vvCnt / 1e4).toFixed(1);      // 万次一位小数，和卡片同精度
+  const vb = new Array(24).fill(null), vl = new Array(24).fill(null),
+        vs = new Array(24).fill(null), kb = new Array(24).fill(''), kl = new Array(24).fill('');
+  bars.forEach(h => { vb[h.from] = w(h); vs[h.from] = h.share; kb[h.from] = h.derived ? 'd' : ''; });
+  line.forEach(h => { vl[h.from] = w(h); kl[h.from] = h.derived ? 'd' : ''; });
+  const bl = key === kToday ? '今日' : md(key);
+  const ll = (key === kToday && prevKey === kYest) ? '昨日' : md(prevKey);
+  const kMark = k => k === 'd' ? '（次日倒推）' : '';
+  /* 三组都靠 datasetIndex 排：Chart.js 按 index 先后绘制，柱子在下、两条线在上，
+     图例也跟着是 今日 / 昨日 / 市占率。原来给它们写过 order 1/2/3，
+     结果图例被倒过来排成 市占率 在最前，而 plugins.legend.sort 在这个版本里不生效。 */
+  const ds = [{ type: 'bar', label: bl, data: vb,
+      backgroundColor: vb.map((v, i) => kb[i] === 'd' ? 'rgba(46,168,255,.30)' : 'rgba(46,168,255,.78)'),
+      borderColor: vb.map((v, i) => kb[i] === 'd' ? 'rgba(46,168,255,.55)' : C_YOUKU),
+      borderWidth: 1, borderRadius: 3, yAxisID: 'y' }];
+  if (vl.some(v => v != null))
+    ds.push({ type: 'line', label: ll, data: vl, borderColor: C_DIM, borderWidth: 1.4,
+      borderDash: [5, 4], pointRadius: 0, tension: .25, yAxisID: 'y', spanGaps: true });
+  if (vs.some(v => v != null))
+    ds.push({ type: 'line', label: '市占率', data: vs, borderColor: C_GOLD, backgroundColor: C_GOLD,
+      borderWidth: 1.6, pointRadius: 1.8, tension: .25, yAxisID: 'y1' });
+  const o = baseOpts();
+  o.scales.x.ticks.callback = (v, i) => i % 2 === 0 ? labels[i] : '';
+  /* 柱子必须有 0 起点：baseOpts 默认 beginAtZero:false，那是给折线图省空间的，
+     柱状用它等于把 36 万那格画得和 940 万一样高。 */
+  o.scales.y.beginAtZero = true;
+  o.scales.y.title = { display: true, text: '正片播放量（万次）', color: C_DIM, font: { size: 10 } };
+  o.scales.y1 = { position: 'right', beginAtZero: true,
+    ticks: { color: C_DIM, font: { size: 10 }, callback: v => v + '%' },
+    grid: { drawOnChartArea: false },
+    title: { display: true, text: '市占率（%）', color: C_DIM, font: { size: 10 } } };
+  o.plugins.tooltip.callbacks = { label: c => {
+    const isShare = c.dataset.label === '市占率';
+    const k = c.dataset.label === ll ? kl[c.dataIndex] : kb[c.dataIndex];
+    return c.dataset.label + ' ' + c.raw + (isShare ? '%' : ' 万' + kMark(k));
+  } };
+  if (vvHourChart) { vvHourChart.data.labels = labels; vvHourChart.data.datasets = ds; vvHourChart.options = o; vvHourChart.update('none'); }
+  else vvHourChart = new Chart(cv, { data: { labels, datasets: ds }, options: o });
+
+  const cur = Math.floor(bjHours());
+  const has23 = bars.some(h => h.from === 23);
+  const sumRaw = bars.reduce((a, h) => a + (+h.vvCnt || 0), 0);
+  const pk = bars.slice().sort((a, b) => b.vvCnt - a.vvCnt)[0];
+  const pkS = bars.filter(h => h.share != null).sort((a, b) => b.share - a.share)[0];
+  /* 同时段对比只算"双方都已闭合"的那些格：拿今日 18 格去比昨日 24 格是自欺欺人。
+     两边都用 from < 当前钟点，所以窗口一字不差。 */
+  const upto = arr => arr.filter(h => h.from < cur).reduce((a, h) => a + (+h.vvCnt || 0), 0);
+  const yU = key === kToday ? upto(line) : 0;
+  const tU = upto(bars);
+  const diff = yU > 0 && line.length ? tU - yU : null;
+  noteEl.innerHTML = '灯塔全网正片播放量 · 每半小时自动重采' +
+    (VVH.has ? ' · 最后一次采集 ' + (bjStamp(VVH.at) || '--') : '') +
+    (key === kToday ? '' : ' · 今日分时未出，现为 ' + md(key)) +
+    (key === kToday ? ' · 最后一格是上一个完整小时' : '');
+  rowsEl.innerHTML =
+    row('峰值小时', pk ? esc(pk.hh) + ' · <b style="color:var(--gold)">' + (pk.vvCnt / 1e4).toFixed(1) + ' 万</b>' + kMark(kb[pk.from]) : '--') +
+    row('最高市占', pkS ? pkS.share + '% · ' + esc(pkS.hh) : '--') +
+    row('分时合计', wan(sumRaw) + ' · 已闭合 ' + bars.length + ' / ' + (has23 ? 24 : 23) + ' 格') +
+    (diff == null ? '' : row('昨日同时段',
+      `<span class="delta ${diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat'}">${diff > 0 ? '▲' : diff < 0 ? '▼' : '—'} ${(Math.abs(diff) / 1e4).toFixed(1)} 万</span>` +
+      `<span> · 两边都算到 ${pad2(cur)}:00 · 昨日 ${wan(yU)}</span>`));
 }
 
 /* ============================================================
@@ -1608,7 +1736,8 @@ async function refreshAll() {
     safe('豆瓣', loadDouban),
     safe('酷云', loadKuyun),
     safe('央视节目单', loadEpg),
-    safe('畅销榜', loadBillboard)
+    safe('畅销榜', loadBillboard),
+    safe('正片分时', loadVvHourly)
   ]);
   stamp();
   btn.disabled = false; btn.innerHTML = '刷新全部数据';
@@ -1685,7 +1814,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') dm.classList
 (async function boot() {
   decorate(); tickCountdown(); setInterval(tickCountdown, 1000);
   renderKPI(); renderBaiduChart(); renderHonor();
-  loadBaiduIndex(); loadBillboard();
+  loadBaiduIndex(); loadBillboard(); loadVvHourly();
   await refreshAll();
   liveLoop();
   every(CONFIG.refresh.dengta, () => safe('灯塔', loadDengta).then(stamp), true);
@@ -1703,6 +1832,10 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') dm.classList
   every(CONFIG.refresh.baidu,  () => safe('百度指数', loadBaiduIndex), true);
   /* 畅销榜和百度指数一样是同源静态 json，5 分钟看一次够用 —— 上游本来就半小时才动一格。 */
   every(CONFIG.refresh.bb,     () => safe('畅销榜', loadBillboard), true);
+  /* 分时档案同源静态 json，和畅销榜一样的节拍（上游也是半小时一格）。
+     正片分时不挂 src 报错：文件缺是首日的正常状态，格子自己会写"档案建立中"。
+     这格不额外敲代理 —— 图完全由 json 驱动，读一次画一次。 */
+  every(CONFIG.refresh.vvh,    () => safe('正片分时', loadVvHourly), true);
   /* 回前台只让 revealJobs 按"各自周期到点没到点"补，不要再无脑全量。
      原来这里挂了一句 `if (Date.now() - src['灯塔'].at > 90e3) refreshAll()`：
      src['灯塔'].at 只有 600 秒一轮的 loadDengta 会写，所以切回来几乎必然判定"太老"，
