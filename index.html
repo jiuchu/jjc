@@ -971,6 +971,8 @@ const CARDS = [
   { k: 'share',     name: '实时播放市占',   c: 'var(--ember)', ico: 'M12 2a10 10 0 100 20 10 10 0 000-20zm1 5v6l5 3-.8 1.3L11 13V7h2z' },
   { k: 'epAvg',     name: '集均播放量',     c: 'var(--ember)', ico: 'M4 20V8h4v12H4zm6 0V4h4v16h-4zm6 0v-8h4v8h-4z' },
   { k: 'yestVv',    name: '昨日全天播放',   c: 'var(--gold)',  ico: 'M5 3h14v4a7 7 0 01-14 0V3zm2 12h10v3H7v-3z' },
+  { k: 'pkHour',    name: '峰值小时',       c: 'var(--youku)', ico: 'M13 2L4 14h6l-1 8 9-12h-6l1-8z' },
+  { k: 'pkShare',   name: '最高市占',       c: 'var(--gold)',  ico: 'M7.5 4a3.5 3.5 0 100 7 3.5 3.5 0 000-7zm9 9a3.5 3.5 0 100 7 3.5 3.5 0 000-7zM5.6 19.4L18.4 4.6l1.2.9L6.8 20.3z' },
   { k: 'baiduIdx',  name: '百度指数·最新',  c: '#ffbe6a',      ico: 'M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z' },
   { k: 'bbWeek',    name: '七日拉新榜',     c: '#7ee0c0',      ico: 'M5 3h14v4a7 7 0 01-14 0V3zm2 12h10v3H7v-3z' },
   { k: 'bbYear',    name: '年度拉新榜',     c: 'var(--gold)',  ico: 'M12 2l2.6 6.3H21l-5.2 4.1 1.9 6.6L12 15.3 6.3 19l1.9-6.6L3 8.3h6.4z' },
@@ -1009,6 +1011,17 @@ function cardVals() {
       return y ? { v: +(y.vvCnt / 1e4).toFixed(1), u: '万', sub: '当日累计 ' + wan(y.totalVv) }
                : { v: null, sub: '昨日还没有本剧的逐日记录' };
     })(),
+    /* 峰值小时 / 最高市占：读的是下面那条分时曲线同一天（判据在 vvhDay()）。
+       数字用「万」和「%」，小时段放进 sub —— 卡片位只放一个数，放两个就都看不清了。 */
+    pkHour:   (() => { const d = vvhDay();
+                 const p = d.bars.slice().sort((a, b) => b.vvCnt - a.vvCnt)[0];
+                 return p ? { v: +(p.vvCnt / 1e4).toFixed(1), u: '万',
+                              sub: p.hh + (p.derived ? ' · 次日倒推' : '') + ' · ' + (d.isToday ? '今日' : '前一日') + '全网正片' }
+                          : { v: null, sub: VVH.has ? '这一天还没有分时格子' : '分时档案建立中' }; })(),
+    pkShare:  (() => { const d = vvhDay();
+                 const p = d.bars.filter(h => h.share != null).sort((a, b) => b.share - a.share)[0];
+                 return p ? { v: p.share, u: '%', sub: p.hh + ' 那一格 · ' + (d.isToday ? '今日最高' : '前一日最高') }
+                          : { v: null, sub: '灯塔没给分时格子里的市占' }; })(),
     bbWeek:   bbCardVal('week', '过去 7 天会员开通热度'),
     bbYear:   bbCardVal('year', '过去 365 天会员开通热度'),
     douban:   { v: S.douban ? (S.douban.count >= 5 && S.douban.score ? S.douban.score.toFixed(1) : (S.douban.noRate || '暂无评分')) : null,
@@ -1451,6 +1464,15 @@ const bjYmd = (t = Date.now()) => new Date(t + 8 * 3600e3).toISOString().slice(0
 function vvHoursOf(key) {
   return ((((VVH.days || {})[key] || {}).hours) || []).slice().sort((a, b) => a.from - b.from);
 }
+/* 顶部那两张卡片和下面那条曲线必须读同一天，所以"取哪天"只写在这一个地方：
+   今天有格就今天；刚过零点、0点-1点 那一格还没攒进来时退回昨天。 */
+function vvhDay() {
+  const kT = bjYmd(), kY = bjYmd(Date.now() - 864e5);
+  let key = kT, prevKey = kY, bars = vvHoursOf(key);
+  if (!bars.length) { key = kY; prevKey = bjYmd(Date.now() - 2 * 864e5); bars = vvHoursOf(key); }
+  return { key, prevKey, bars, line: vvHoursOf(prevKey),
+           isToday: key === kT, yestShown: key === kT && prevKey === kY };
+}
 async function loadVvHourly() {
   try {
     const r = await fetch('./vv-hourly.json?t=' + Date.now(), { cache: 'no-store' });
@@ -1465,6 +1487,9 @@ async function loadVvHourly() {
     VVH.has = false;
   }
   renderVvHour();
+  /* 分时那两个数现在是顶部卡片了，而开机时 renderKPI() 跑在这份 json 到之前，
+     不补这一发，卡片要等到下一轮 refreshAll 才有数（百度和畅销榜那两条也是这么补的）。 */
+  renderKPI();
 }
 function renderVvHour() {
   const cv = document.getElementById('vvHourChart');
@@ -1473,13 +1498,11 @@ function renderVvHour() {
   const rowsEl = document.getElementById('vvHourRows');
   if (!cv) return;
   const md = k => k.slice(4, 6) + '/' + k.slice(6, 8);
-  const kToday = bjYmd(), kYest = bjYmd(Date.now() - 864e5);
   /* 零点过后到 0点-1点 那一格被攒进来之前，"今天"还是一格都没有。
-     那时候退回画刚结束的那一天，别让整条曲线凭空消失。 */
-  let key = kToday, prevKey = kYest;
-  let bars = vvHoursOf(key);
-  if (!bars.length) { key = kYest; prevKey = bjYmd(Date.now() - 2 * 864e5); bars = vvHoursOf(key); }
-  const line = vvHoursOf(prevKey);
+     那时候退回画刚结束的那一天，别让整条曲线凭空消失。判据在 vvhDay() 里，
+     顶部那两张卡片读的是同一个。 */
+  const D = vvhDay();
+  const key = D.key, prevKey = D.prevKey, bars = D.bars, line = D.line;
   if (!bars.length) {
     em.style.display = 'grid'; rowsEl.innerHTML = '';
     noteEl.textContent = '灯塔全网口径 · 分时档案建立中';
@@ -1493,8 +1516,8 @@ function renderVvHour() {
         vs = new Array(24).fill(null), kb = new Array(24).fill(''), kl = new Array(24).fill('');
   bars.forEach(h => { vb[h.from] = w(h); vs[h.from] = h.share; kb[h.from] = h.derived ? 'd' : ''; });
   line.forEach(h => { vl[h.from] = w(h); kl[h.from] = h.derived ? 'd' : ''; });
-  const bl = key === kToday ? '今日' : md(key);
-  const ll = (key === kToday && prevKey === kYest) ? '昨日' : md(prevKey);
+  const bl = D.isToday ? '今日' : md(key);
+  const ll = D.yestShown ? '昨日' : md(prevKey);
   const kMark = k => k === 'd' ? '（次日倒推）' : '';
   /* 三组都靠 datasetIndex 排：Chart.js 按 index 先后绘制，柱子在下、两条线在上，
      图例也跟着是 今日 / 昨日 / 市占率。原来给它们写过 order 1/2/3，
@@ -1530,21 +1553,18 @@ function renderVvHour() {
   const cur = Math.floor(bjHours());
   const has23 = bars.some(h => h.from === 23);
   const sumRaw = bars.reduce((a, h) => a + (+h.vvCnt || 0), 0);
-  const pk = bars.slice().sort((a, b) => b.vvCnt - a.vvCnt)[0];
-  const pkS = bars.filter(h => h.share != null).sort((a, b) => b.share - a.share)[0];
-  /* 同时段对比只算"双方都已闭合"的那些格：拿今日 18 格去比昨日 24 格是自欺欺人。
+  /* 同时段对比只算双方都已闭合的那些格：拿今日 18 格去比昨日 24 格是自欺欺人。
      两边都用 from < 当前钟点，所以窗口一字不差。 */
   const upto = arr => arr.filter(h => h.from < cur).reduce((a, h) => a + (+h.vvCnt || 0), 0);
-  const yU = key === kToday ? upto(line) : 0;
+  const yU = D.isToday ? upto(line) : 0;
   const tU = upto(bars);
   const diff = yU > 0 && line.length ? tU - yU : null;
   noteEl.innerHTML = '灯塔全网正片播放量 · 每半小时自动重采' +
     (VVH.has ? ' · 最后一次采集 ' + (bjStamp(VVH.at) || '--') : '') +
-    (key === kToday ? '' : ' · 今日分时未出，现为 ' + md(key)) +
-    (key === kToday ? ' · 最后一格是上一个完整小时' : '');
+    (D.isToday ? '' : ' · 今日分时未出，现为 ' + md(key)) +
+    (D.isToday ? ' · 最后一格是上一个完整小时' : '');
+  /* 峰值小时 / 最高市占 已升到顶部卡片，这里只留合计和同时段两行。 */
   rowsEl.innerHTML =
-    row('峰值小时', pk ? esc(pk.hh) + ' · <b style="color:var(--gold)">' + (pk.vvCnt / 1e4).toFixed(1) + ' 万</b>' + kMark(kb[pk.from]) : '--') +
-    row('最高市占', pkS ? pkS.share + '% · ' + esc(pkS.hh) : '--') +
     row('分时合计', wan(sumRaw) + ' · 已闭合 ' + bars.length + ' / ' + (has23 ? 24 : 23) + ' 格') +
     (diff == null ? '' : row('昨日同时段',
       `<span class="delta ${diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat'}">${diff > 0 ? '▲' : diff < 0 ? '▼' : '—'} ${(Math.abs(diff) / 1e4).toFixed(1)} 万</span>` +
