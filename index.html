@@ -412,6 +412,15 @@ footer a:active{transform:translateY(0)}
         <div class="empty" id="bbYearEmpty">年度榜单明细采集中…</div></div>
       <div class="p-note" id="bbYearRule"></div>
     </div>
+
+    <div class="panel wide">
+      <div class="p-head"><div class="p-title"><i></i>优酷 App 下载量估算</div>
+        <div class="p-note" id="qmNote">第三方预估 · 人工快照</div></div>
+      <div class="chart-box short"><canvas id="qmChart"></canvas>
+        <div class="empty" id="qmEmpty">暂无数据</div></div>
+      <div class="rows" id="qmRows"></div>
+      <div class="p-note" id="qmRule"></div>
+    </div>
   </div>
 
   <!-- ===================== SECONDARY ===================== -->
@@ -485,7 +494,7 @@ const CONFIG = {
      Cloudflare 免费额度 10 万请求/天是整个账号共享的，两个面板加所有轮询都算在里面，
      之前两边全程开秒级，一天烧到 9 万，直接 1027 停摆。
      heatLive/heat 是第二对、dengta 是日榜（10 分钟足够），节拍按下面的实测增速定。 */
-  refresh: { dengta: 600e3, live: 3e3, idle: 15e3, ssr: 10 * 60e3, heatLive: 120e3, heat: 600e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3, baidu: 300e3, bb: 300e3, vvh: 300e3 },
+  refresh: { dengta: 600e3, live: 3e3, idle: 15e3, ssr: 10 * 60e3, heatLive: 120e3, heat: 600e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3, baidu: 300e3, bb: 300e3, vvh: 300e3, qm: 1800e3 },
   liveWindow: [21.4, 23.5],         // VV 秒级只给 CCTV-8 那两集：21:24 提要、21:29–22:19、22:21–23:11（10-19/20/21 三天节目单同一格）
   /* ⚠ 这一档原先是 [18, 24]，理由是 10-16 首播那几天优酷 18:00 放量，注释却写着"电视黄金档"——
      可 CCTV-8 从第一天起就是 21:29 开，18:00 从来不是电视档。10-17 网播挪到中午 12:00 之后，
@@ -1356,7 +1365,7 @@ function renderHonor() {
 /* ============================================================
    图表
    ============================================================ */
-let hotChart, rankChart, liveChart, baiduChart, bbChart, bbYearChart, vvHourChart;
+let hotChart, rankChart, liveChart, baiduChart, bbChart, bbYearChart, qmChart, vvHourChart;
 const C_YOUKU = '#2ea8ff', C_GOLD = '#ffc861', C_DIM = '#8e97b0';
 
 const baseOpts = () => ({
@@ -1785,6 +1794,77 @@ function renderYearBar() {
 }
 
 /* ============================================================
+   优酷 App 下载量估算（第三方预估 · 人工快照）
+   ============================================================ */
+const QM = { d: null, note: '' };
+/* 这一路读的是仓库根的 qimai.json，同源静态文件、不过代理、不占额度。
+   它不像别的格子会自己长：上游那个签名参数钉死了日期窗口，换一天就要一条新链接，
+   所以是"贴一条、更一次"。缺文件是还没贴过的正常状态，不进 src 表、不点页顶报错条。 */
+async function loadQimai() {
+  try {
+    const r = await fetch('./qimai.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    if (!Array.isArray(j.list) || !j.list.length) throw new Error('empty');
+    QM.d = j; QM.note = '';
+  } catch (e) { QM.note = '暂无数据'; }
+  renderQimai();
+}
+function renderQimai() {
+  const em = document.getElementById('qmEmpty');
+  const note = document.getElementById('qmNote');
+  const rows = document.getElementById('qmRows');
+  const rule = document.getElementById('qmRule');
+  const d = QM.d;
+  if (!d) {
+    if (em) em.style.display = 'grid';
+    if (note) note.textContent = '第三方预估 · 人工快照';
+    if (rows) rows.innerHTML = '';
+    if (rule) rule.innerHTML = '';
+    if (qmChart) { qmChart.destroy(); qmChart = null; }
+    return;
+  }
+  if (em) em.style.display = 'none';
+  const L = d.list;
+  const pk = L.reduce((a, x) => (x.v > a.v ? x : a), L[0]);
+  if (note) note.textContent = (d.auto ? '云端自动重采' : '人工快照') + (d.at ? ' · 拉取于 ' + esc(String(d.at).slice(5)) : '');
+  if (rows) {
+    /* 「首播前基准」只在窗口真的框到 10-16 之前的日子时才算得出来；哪天贴的链接
+       只覆盖播出那几天，pre 就是空的，那半句直接不写 —— 不拿整窗日均冒充首播前水位。 */
+    const pre = L.filter(x => x.date < '2026-10-16');
+    const preAvg = pre.length ? pre.reduce((a, b) => a + b.v, 0) / pre.length : null;
+    const last7 = L.slice(-7).reduce((a, x) => a + x.v, 0);
+    /* 七麦当天那格回的是 0（还没结算），采集端已经把它剥出 list 存进 pending。
+       这里照实说"这一天尚在统计"，别让曲线在尾巴上假摔到零，也别让合计看着少一天。 */
+    const pend = Array.isArray(d.pending) ? d.pending : [];
+    rows.innerHTML =
+      row('统计窗口', esc(d.sdate) + ' ~ ' + esc(d.edate) + ' · ' + L.length + ' 天' +
+        (pend.length ? `<span style="color:var(--dim);font-weight:400">（${esc(pend.map(x => String(x).slice(5)).join('、'))} 尚在统计）</span>` : '')) +
+      row('合计', fmt(d.sum) + ' 次 · ' + wan(d.sum)) +
+      /* 窗口本身就不到 7 天时「近 7 天」和「合计」是两行废话，只留合计。 */
+      (L.length > 7 ? row('近 7 天', wan(last7) + ' · 日均 ' + wan(last7 / 7)) : '') +
+      row('单日最高', `<b style="color:var(--gold)">${wan(pk.v)}</b> · ${esc(pk.date.slice(5))}` +
+        (preAvg ? ` · 是 ${esc(pre[0].date.slice(5))}~${esc(pre[pre.length - 1].date.slice(5))} 日均（${wan(preAvg)}）的 ${(pk.v / preAvg).toFixed(1)} 倍` : ''));
+  }
+  if (rule) rule.innerHTML = '口径：这是<b>第三方对 iOS 商店下载量的预估</b>，不是优酷官方数；'
+    + '统计的是<b>整个优酷 App</b>，本剧只是同期在播内容之一 —— 这条线的上涨<b>不能整条算成一部剧带来的</b>。';
+
+  const o = baseOpts();
+  o.scales.x.ticks.callback = (v, i) => i % Math.ceil(L.length / 10) === 0 ? L[i].date.slice(5) : '';
+  o.scales.y.ticks.callback = v => (v / 1e4) + '万';
+  o.scales.y.title = { display: true, text: '日下载量（次）', color: C_DIM, font: { size: 10 } };
+  const ds = [{ label: '日下载量', data: L.map(x => x.v), borderColor: C_YOUKU,
+    backgroundColor: 'rgba(46,168,255,.12)', borderWidth: 2, tension: .25, fill: true,
+    pointRadius: L.map(x => (x.v === pk.v ? 4 : 0)), pointBackgroundColor: C_GOLD, pointBorderColor: C_GOLD }];
+  if (d.avg != null) ds.push({ label: '窗口日均', data: L.map(() => d.avg), borderColor: 'rgba(255,200,97,.7)',
+    borderWidth: 1.2, borderDash: [5, 4], pointRadius: 0, fill: false });
+  o.plugins.tooltip.callbacks = { label: c => `${c.dataset.label} ${fmt(c.raw)} 次` };
+  const cv = document.getElementById('qmChart');
+  if (qmChart) { qmChart.data.labels = L.map(x => x.date); qmChart.data.datasets = ds; qmChart.options = o; qmChart.update('none'); }
+  else qmChart = new Chart(cv, { type: 'line', data: { labels: L.map(x => x.date), datasets: ds }, options: o });
+}
+
+/* ============================================================
    调度
    ============================================================ */
 const revealJobs = [];
@@ -1813,7 +1893,8 @@ async function refreshAll() {
     safe('酷云', loadKuyun),
     safe('央视节目单', loadEpg),
     safe('畅销榜', loadBillboard),
-    safe('正片分时', loadVvHourly)
+    safe('正片分时', loadVvHourly),
+    safe('下载量', loadQimai)
   ]);
   stamp();
   btn.disabled = false; btn.innerHTML = '刷新全部数据';
@@ -1890,7 +1971,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') dm.classList
 (async function boot() {
   decorate(); tickCountdown(); setInterval(tickCountdown, 1000);
   renderKPI(); renderBaiduChart(); renderHonor();
-  loadBaiduIndex(); loadBillboard(); loadVvHourly();
+  loadBaiduIndex(); loadBillboard(); loadVvHourly(); loadQimai();
   await refreshAll();
   liveLoop();
   every(CONFIG.refresh.dengta, () => safe('灯塔', loadDengta).then(stamp), true);
@@ -1912,6 +1993,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') dm.classList
      正片分时不挂 src 报错：文件缺是首日的正常状态，格子自己会写"档案建立中"。
      这格不额外敲代理 —— 图完全由 json 驱动，读一次画一次。 */
   every(CONFIG.refresh.vvh,    () => safe('正片分时', loadVvHourly), true);
+  /* 下载量那份一周才动一次（要人工贴新链接），30 分钟看一回足够，别和半小时那几格混节拍。 */
+  every(CONFIG.refresh.qm,     () => safe('下载量', loadQimai), true);
   /* 回前台只让 revealJobs 按"各自周期到点没到点"补，不要再无脑全量。
      原来这里挂了一句 `if (Date.now() - src['灯塔'].at > 90e3) refreshAll()`：
      src['灯塔'].at 只有 600 秒一轮的 loadDengta 会写，所以切回来几乎必然判定"太老"，
