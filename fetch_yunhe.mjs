@@ -20,7 +20,7 @@
 //   YUNHE_OUT     产出路径，默认 yunhe.json
 //   YUNHE_NAMEID  剧的 nameId，默认 8746798（嫁金钗）
 //   YUNHE_KEEP    档案最多留多少天，默认 400
-//   YUNHE_HEARTBEAT  没新档位时也允许多久写一次「只推进检查时刻」，默认 60（分钟）
+//   YUNHE_HEARTBEAT  没新档位时也允许多久写一次「只推进检查时刻」，默认 50（分钟）
 //   YUNHE_PROBE   1 = 取数、打印、不写文件（用来验 Actions 的机房 IP 能不能取到数）
 
 import fs from 'node:fs';
@@ -30,7 +30,7 @@ const OUT = process.env.YUNHE_OUT || 'yunhe.json';
 const NAMEID = String(process.env.YUNHE_NAMEID || '8746798');
 const NAME = process.env.YUNHE_NAME || '嫁金钗';
 const KEEP = Number(process.env.YUNHE_KEEP || 400);
-const HEARTBEAT = Number(process.env.YUNHE_HEARTBEAT) || 60;   /* 分钟；填个非数字也当没填，别让心跳静默失效 */
+const HEARTBEAT = Number(process.env.YUNHE_HEARTBEAT) || 50;   /* 分钟；填个非数字也当没填，别让心跳静默失效。为什么是 50 不是 60，见 needWrite 头上那段 */
 const PROBE = process.env.YUNHE_PROBE === '1';
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
@@ -87,8 +87,11 @@ export function merge(oldDays, fresh, at) {
    为什么要有它：页面上那句「检查于」是他判断这条链路今天还通不通的唯一凭据。
    只按前两条写的话，评级没出的那些天里这句话一整天不动（10-21 上午就是：10:01 那拍跑绿了，
    卡片上还写着 09:25），「还没出档」和「早就不跑了」在他眼里长得一模一样。
-   心跳设 60 分钟 = 最坏一天 24 次提交，而不是半小时一拍的 48 次。 */
-export function needWrite(old, now, changed, heartbeatMin = 60) {
+   心跳设 50 分钟而不是 60：Actions 每一拍的实际起点有 ±1 分钟抖动，写死 60 会被"59 分 45 秒"
+   那一拍顶掉、滑成 90 分钟才写一次（10-21 中午线上就是这样：11:31 → 13:01）。
+   50 落在 30 和 60 之间 ⇒ 下一拍（30 分）必不写、再下一拍（60 分）必写，节拍锁死在每小时一次。
+   代价：最坏一天 24 次提交，而不是半小时一拍的 48 次。 */
+export function needWrite(old, now, changed, heartbeatMin = 50) {
   const rollover = !old || old.atDay !== bjDay(now);
   const t = Date.parse(String((old && old.fetchedAt) || ''));
   const stale = !Number.isFinite(t) || (now.getTime() - t) >= heartbeatMin * 6e4;
