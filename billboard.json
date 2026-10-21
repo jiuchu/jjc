@@ -5,33 +5,33 @@
  "asof": "2026-10-22",
  "latest": {
   "date": "2026-10-22",
-  "hm": "05:01",
-  "iso": "2026-10-22 05:01 +08",
+  "hm": "05:31",
+  "iso": "2026-10-22 05:31 +08",
   "weekRank": 1,
-  "weekValue": 4807.66,
+  "weekValue": 4809.13,
   "yearRank": 7,
-  "yearValue": 3675.95
+  "yearValue": 3676.49
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4807.66
+   "value": 4809.13
   },
   {
    "rank": 2,
    "title": "无可替代",
-   "value": 3637.85
+   "value": 3637.86
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 3622.63
+   "value": 3622.62
   },
   {
    "rank": 4,
    "title": "此处通往繁星",
-   "value": 3585.24
+   "value": 3585.25
   },
   {
    "rank": 5,
@@ -41,12 +41,12 @@
   {
    "rank": 6,
    "title": "九门",
-   "value": 3581.09
+   "value": 3581.13
   },
   {
    "rank": 7,
    "title": "冬城猎凶",
-   "value": 3581.05
+   "value": 3581.03
   },
   {
    "rank": 8,
@@ -61,17 +61,17 @@
   {
    "rank": 10,
    "title": "悬案",
-   "value": 3568.21
+   "value": 3568.22
   },
   {
    "rank": 11,
    "title": "当我飞奔向你",
-   "value": 3568.11
+   "value": 3568.12
   },
   {
    "rank": 12,
    "title": "难哄",
-   "value": 3567.51
+   "value": 3567.52
   },
   {
    "rank": 13,
@@ -81,7 +81,7 @@
   {
    "rank": 14,
    "title": "藏海传",
-   "value": 3563.5
+   "value": 3563.49
   },
   {
    "rank": 15,
@@ -91,27 +91,27 @@
   {
    "rank": 16,
    "title": "春花焰",
-   "value": 3562.21
+   "value": 3562.22
   },
   {
    "rank": 17,
    "title": "千香",
-   "value": 3562.1
+   "value": 3562.11
   },
   {
    "rank": 18,
    "title": "良辰好景知几何",
-   "value": 3557.07
+   "value": 3557.08
   },
   {
    "rank": 19,
    "title": "以法之名",
-   "value": 3553.68
+   "value": 3553.71
   },
   {
    "rank": 20,
    "title": "蜀锦人家",
-   "value": 3551.08
+   "value": 3551.14
   }
  ],
  "topYear": [
@@ -123,7 +123,7 @@
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 5120.92
+   "value": 5120.93
   },
   {
    "rank": 3,
@@ -148,7 +148,7 @@
   {
    "rank": 7,
    "title": "嫁金钗",
-   "value": 3675.95
+   "value": 3676.49
   },
   {
    "rank": 8,
@@ -1176,9 +1176,17 @@
    "weekValue": 4807.66,
    "yearRank": 7,
    "yearValue": 3675.95
+  },
+  {
+   "date": "2026-10-22",
+   "hm": "05:31",
+   "weekRank": 1,
+   "weekValue": 4809.13,
+   "yearRank": 7,
+   "yearValue": 3676.49
   }
  ],
- "fetchedAt": "2026-10-21T21:01:10.620Z",
- "lastRun": "2026-10-21T21:01:10.620Z",
+ "fetchedAt": "2026-10-21T21:31:11.559Z",
+ "lastRun": "2026-10-21T21:31:11.559Z",
  "count": 20
 }
