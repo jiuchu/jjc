@@ -407,7 +407,7 @@ footer a:active{transform:translateY(0)}
 
     <div class="panel wide">
       <div class="p-head"><div class="p-title"><i></i>优酷年度畅销榜</div>
-        <div class="p-note">按过去 365 天会员开通热度排序</div></div>
+        <div class="p-note" id="bbYearNote">按过去 365 天会员开通热度排序</div></div>
       <div class="chart-box"><canvas id="bbYearChart"></canvas>
         <div class="empty" id="bbYearEmpty">年度榜单明细采集中…</div></div>
       <div class="p-note" id="bbYearRule"></div>
@@ -1774,9 +1774,14 @@ function renderBillboard() {
    压细了就成一片齐平的条子，反而看不出深浅。本剧名次始终写在下面那行字里，掉出 12 名也不会丢信息。 */
 function renderYearBar() {
   const em = document.getElementById('bbYearEmpty');
+  const note = document.getElementById('bbYearNote');
   const rule = document.getElementById('bbYearRule');
   const rows = BB.topYear.slice(0, 12);
   const L = BB.latest;
+  /* 右上角的时刻和 7 日那张同源同刻（bbStamp 读的是同一个 lastRun）：
+     两个榜是同一次采样一起落地的，各写各的只会让人以为年度榜更旧。
+     空态也照写 —— 明细没落地但 lastRun 在，那是"上游没给 topYear"，和"根本没在采"是两件事。 */
+  if (note) note.textContent = '按过去 365 天会员开通热度排序' + bbStamp();
   if (!rows.length) {
     if (em) { em.style.display = 'grid'; em.textContent = '年度榜单明细 · 等下一次采集落地'; }
     if (rule) rule.innerHTML = '';
