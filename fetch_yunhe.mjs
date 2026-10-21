@@ -20,6 +20,7 @@
 //   YUNHE_OUT     产出路径，默认 yunhe.json
 //   YUNHE_NAMEID  剧的 nameId，默认 8746798（嫁金钗）
 //   YUNHE_KEEP    档案最多留多少天，默认 400
+//   YUNHE_HEARTBEAT  没新档位时也允许多久写一次「只推进检查时刻」，默认 60（分钟）
 //   YUNHE_PROBE   1 = 取数、打印、不写文件（用来验 Actions 的机房 IP 能不能取到数）
 
 import fs from 'node:fs';
@@ -29,6 +30,7 @@ const OUT = process.env.YUNHE_OUT || 'yunhe.json';
 const NAMEID = String(process.env.YUNHE_NAMEID || '8746798');
 const NAME = process.env.YUNHE_NAME || '嫁金钗';
 const KEEP = Number(process.env.YUNHE_KEEP || 400);
+const HEARTBEAT = Number(process.env.YUNHE_HEARTBEAT) || 60;   /* 分钟；填个非数字也当没填，别让心跳静默失效 */
 const PROBE = process.env.YUNHE_PROBE === '1';
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
@@ -80,6 +82,19 @@ export function merge(oldDays, fresh, at) {
   return { days: days.slice(-KEEP), fixes, changed };
 }
 
+/* 要不要落盘。三种情况写：档位变了、跨了北京日界、或者距上次写盘超过 heartbeat 分钟。
+   最后那一条是心跳 —— 它只推进 at，不新增任何数据。
+   为什么要有它：页面上那句「检查于」是他判断这条链路今天还通不通的唯一凭据。
+   只按前两条写的话，评级没出的那些天里这句话一整天不动（10-21 上午就是：10:01 那拍跑绿了，
+   卡片上还写着 09:25），「还没出档」和「早就不跑了」在他眼里长得一模一样。
+   心跳设 60 分钟 = 最坏一天 24 次提交，而不是半小时一拍的 48 次。 */
+export function needWrite(old, now, changed, heartbeatMin = 60) {
+  const rollover = !old || old.atDay !== bjDay(now);
+  const t = Date.parse(String((old && old.fetchedAt) || ''));
+  const stale = !Number.isFinite(t) || (now.getTime() - t) >= heartbeatMin * 6e4;
+  return { write: !!changed || rollover || stale, changed: !!changed, rollover, stale };
+}
+
 async function fetchLevel() {
   let r = null, txt = '';
   try {
@@ -116,9 +131,7 @@ if (!process.env.YUNHE_LIB_ONLY) {
   const now = new Date();
   const at = bjStamp(now);
   const m = merge(old?.days, res.days, at);
-  /* 跨了北京日界也要写一次：这一拍把 at 推进、页面上那句「检查于」才会往前走。
-     不跨日、档位又没动，就一个字都不写 —— 评级一天只动一次，半小时一拍等于一天白提 48 次。 */
-  const rollover = !old || old.atDay !== bjDay(now);
+  const gate = needWrite(old, now, m.changed, HEARTBEAT);
   const body = {
     name: NAME, nameId: Number(NAMEID),
     at, atDay: bjDay(now), fetchedAt: now.toISOString(),
@@ -129,7 +142,8 @@ if (!process.env.YUNHE_LIB_ONLY) {
     fixes: (Array.isArray(old?.fixes) ? old.fixes : []).concat(m.fixes),
   };
 
-  console.log(`云合评级 · ${NAME}（nameId ${NAMEID}）第 ${body.runs} 次检查 · ${at}`);
+  /* runs 记的是落盘次数，不是检查次数（心跳之后两者差好几倍），所以这一行把两个都说清 */
+  console.log(`云合评级 · ${NAME}（nameId ${NAMEID}）${at} · 档案已落盘 ${Number(old?.runs) || 0} 次，这一拍${gate.write ? `是第 ${body.runs} 次` : '不写'}`);
   console.log(res.days.length
     ? `这一拍拿到 ${res.days.length} 天：` + res.days.map(x => `${x.date} ${x.level}`).join(' / ')
     : '这一拍接口回的是空数组 —— 本剧还没出档');
@@ -140,7 +154,11 @@ if (!process.env.YUNHE_LIB_ONLY) {
   if (m.fixes.length) console.log('上游改了口：' + m.fixes.map(f => `${f.date} ${f.from}→${f.to}`).join(' / '));
 
   if (PROBE) { console.log('探测模式：不写文件。'); process.exit(0); }
-  if (!m.changed && !rollover) { console.log('既没有新档位，也没跨日 —— 不写盘，这一拍不产生提交。'); process.exit(0); }
+  if (!gate.write) {
+    console.log(`既没有新档位、也没跨日，距上次写盘还不到 ${HEARTBEAT} 分钟 —— 不写盘，这一拍不产生提交。`);
+    process.exit(0);
+  }
   fs.writeFileSync(OUT, JSON.stringify(body, null, 2) + '\n');
-  console.log(`已写 ${OUT}（${m.changed ? '档位有变化' : '跨日，只推进检查时刻'}）`);
+  const why = m.changed ? '档位有变化' : !old ? '第一次建档' : gate.rollover ? '跨日' : '心跳';
+  console.log(`已写 ${OUT}（${why}${m.changed ? '，档案已更新' : '，只推进检查时刻'}）`);
 }
