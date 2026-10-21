@@ -5,48 +5,48 @@
  "asof": "2026-10-22",
  "latest": {
   "date": "2026-10-22",
-  "hm": "06:01",
-  "iso": "2026-10-22 06:01 +08",
+  "hm": "06:31",
+  "iso": "2026-10-22 06:31 +08",
   "weekRank": 1,
-  "weekValue": 4810.22,
+  "weekValue": 4810.79,
   "yearRank": 7,
-  "yearValue": 3676.98
+  "yearValue": 3677.42
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4810.22
+   "value": 4810.79
   },
   {
    "rank": 2,
    "title": "无可替代",
-   "value": 3637.87
+   "value": 3637.88
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 3622.61
+   "value": 3622.59
   },
   {
    "rank": 4,
    "title": "此处通往繁星",
-   "value": 3585.26
+   "value": 3585.29
   },
   {
    "rank": 5,
    "title": "一瓯春",
-   "value": 3584.43
+   "value": 3584.42
   },
   {
    "rank": 6,
    "title": "九门",
-   "value": 3581.18
+   "value": 3581.21
   },
   {
    "rank": 7,
    "title": "冬城猎凶",
-   "value": 3581.04
+   "value": 3581.09
   },
   {
    "rank": 8,
@@ -66,12 +66,12 @@
   {
    "rank": 11,
    "title": "当我飞奔向你",
-   "value": 3568.12
+   "value": 3568.13
   },
   {
    "rank": 12,
    "title": "难哄",
-   "value": 3567.52
+   "value": 3567.54
   },
   {
    "rank": 13,
@@ -81,12 +81,12 @@
   {
    "rank": 14,
    "title": "藏海传",
-   "value": 3563.49
+   "value": 3563.51
   },
   {
    "rank": 15,
    "title": "师兄太稳健",
-   "value": 3562.82
+   "value": 3562.83
   },
   {
    "rank": 16,
@@ -101,17 +101,17 @@
   {
    "rank": 18,
    "title": "良辰好景知几何",
-   "value": 3557.08
+   "value": 3557.14
   },
   {
    "rank": 19,
    "title": "以法之名",
-   "value": 3553.71
+   "value": 3553.72
   },
   {
    "rank": 20,
    "title": "蜀锦人家",
-   "value": 3551.14
+   "value": 3551.15
   }
  ],
  "topYear": [
@@ -148,7 +148,7 @@
   {
    "rank": 7,
    "title": "嫁金钗",
-   "value": 3676.98
+   "value": 3677.42
   },
   {
    "rank": 8,
@@ -1200,9 +1200,17 @@
    "weekValue": 4810.22,
    "yearRank": 7,
    "yearValue": 3676.98
+  },
+  {
+   "date": "2026-10-22",
+   "hm": "06:31",
+   "weekRank": 1,
+   "weekValue": 4810.79,
+   "yearRank": 7,
+   "yearValue": 3677.42
   }
  ],
- "fetchedAt": "2026-10-21T21:57:10.287Z",
- "lastRun": "2026-10-21T22:01:09.756Z",
+ "fetchedAt": "2026-10-21T22:31:08.876Z",
+ "lastRun": "2026-10-21T22:31:08.876Z",
  "count": 20
 }
