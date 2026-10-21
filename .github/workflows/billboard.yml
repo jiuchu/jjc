@@ -1,46 +1,51 @@
-# 灯塔「正片播放 · 分时」采集 —— 嫁金钗
+# 优酷 7 日畅销榜重采 + 云合评级 —— 嫁金钗
 #
-# 这个接口只回"今天到此刻"的分时格子，昨天的拿不到（showDate / date / bizDate /
-# queryDate / dateRange 五个参数 2026-10-20 实测全部被忽略），所以历史必须靠这里
-# 一小时一小时攒出来 —— 少跑一天，那一天就永久只有日累计、没有分时。
-#
-# 前置（一次性）：
+# 前置（一次性，都在 GitHub 网页上设）：
 #   1. Settings → Actions → General → Workflow permissions → Read and write
-#   2. 本文件放 .github/workflows/vv-hourly.yml，fetch_vv_hourly.mjs 放仓库根
-#   3. Worker 那条全天闹钟（*/30 * * * *）的 BILLBOARD_TARGETS 里加上本文件，
-#      它才会被敲门；不加就永远不自动跑，手点仍然可用。
+#   2. 本文件放 .github/workflows/ 下；fetch_billboard.mjs / billboard.json /
+#      fetch_yunhe.mjs / yunhe.json 四个都放仓库根
+#      （billboard.json 和 yunhe.json 可以先不传，脚本第一次跑自己建）
 #
-# 节拍：跟着畅销榜那条全天闹钟走，但**一小时只真跑一拍** —— 判据是「要不要跑」
-# 里读 json 自己的 lastRun（距上次成功落地不足 45 分钟就不跑），不再读 Runner 的墙钟。
-# 原来那句 date -u +%M 小于 30 有个洞：它读的是步骤开始执行那一刻的钟，Cloudflare 的
-# cron 早到几秒，:30 那一拍就翻进小于 30 那侧漏跑一次（10-20 21:31 的红叉就是这么来的）。
-# 挡掉不心疼：每次真跑都是把当天已闭合的格子整份重读一遍，所以漏掉几个格子只是当天
-# 曲线晚一格长出来，当天午夜前只要成功一拍，那一天就有 0点-1点 … 22点-23点 共 23 格。
-# 反过来，上一轮要是没推上去，lastRun 就还停在那儿，下一拍 gap 仍然大于 45 → 照跑，
-# 等于自带一次补投。
-# ⚠ 23点-0点 那一格当天拿不到（过 0 点它算昨天，而接口只回今天），脚本改到**第二天**
-#    用当天终值倒推补上，标 derived。不能当天算：逐日那行比逐时慢一截，
-#    10-20 18:24 实测 Σ(0点-17点)=5,120.1 万 > 同一分钟的当日累计 5,030.3 万，
-#    当天做减法会得到负数。
-# 24 拍/天 = 最多 24 个 commit ≈ 每小时一次 Pages 重建，和百度指数那条一个量级。
+# 这条比百度指数那条简单得多：取数是匿名签名，没有 cookie、没有 secret、没有浏览器，
+# 一个 step 十几秒跑完。所以「装 Playwright」那一步整个没有。
 #
-# ⚠ 这条 schedule 是备份档、实际不会响（GitHub 给他账号投递定时事件早就停了）。
-#    分钟故意取 11/41，和主闹钟的 :00/:30、百度那条的格子都错开，
-#    免得同一分钟撞进 concurrency 组被 cancel-in-progress 自己掐掉。
+# ⚠ 这份文件是"读旧-追加-写新"的：samples[] -history 只存在这个 json 里，
+#   优酷那边只有当前值、没有历史接口。所以提交前一定要先 pull --rebase，
+#   撞车时宁可让这一轮白跑，也不能把别人攒的采样点覆盖掉。
+#
+# 节拍不在这里，在 Worker 的 Settings → Triggers 页上（cron 是 UTC）。
+# 要的是 */30 * * * * = 一天 48 格。榜是台阶式跳的、上午也跳，所以不能只开 12 点后。
+# 48 次/天是 Actions 的自动排队，公共仓库不吃分钟；Worker 只负责发 48 个 POST，
+# 额度按 Worker 请求数算，一天不到一百次，离 10 万远得很。
+#
+# ⚠ 下面的 schedule 是备份，主力闹钟是 Worker 的 Cron Trigger ——
+#   GitHub 的定时事件从他这个账号整个停了（2026-10-18 canary 已判完）。
+#   备份故意错开分钟（:07 / :37），免得和主闹钟同一分钟撞进同一个 concurrency 组、
+#   被 cancel-in-progress 自己掐掉。
+# 注意：YAML 的注释只能以 # 开头，写成 /* */ 会让整个文件解析失败、GitHub 直接不认这个 workflow。
 
-name: dengta-vv-hourly
+# ⚠ 2026-10-19 出事记录：这一度叫 `billboard-jiajinchai`，和同仓库的
+#   `baidu-index-jiajinchai` 只差一个词。上传后 GitHub 侧栏里 baidu 那条整个消失了，
+#   run 号 60/61 连续编下去、两条都标 Manually run by jiuchu（= Worker 用他 PAT 发的
+#   dispatch，时刻正好压在 */30 3-12 的 04:30 / 05:00 UTC 两格）—— 也就是说
+#   Worker 每半小时那一发被并到了这个 workflow 实体上，百度指数从此一格也拿不到。
+#   所以这里的 name 和 concurrency group 都改成和"百度指数"毫无共同词的写法。
+#   以后往这个仓库加 workflow，name 一律用「来源+对象+编号」这种可区分结构，别再用 -jiajinchai 后缀。
+name: yk-billboard-10423
 
 on:
   schedule:
-    - cron: '11,41 * * * *'
+    - cron: '7,37 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
-  # 这里没有读 run 历史的护栏（护栏看的是钟表分钟），所以不用像另外两条那样显式给 actions: read。
+  # 护栏要读本工作流的 run 列表。写了 permissions 这一节，没列出来的作用域全是 none，
+  # 所以 actions 必须显式给 read —— 不给的话护栏永远读到 9999，静默失效。
+  actions: read
 
 concurrency:
-  group: dengta-vv-hourly
+  group: yk-billboard-10423
   cancel-in-progress: true
 
 jobs:
@@ -48,59 +53,70 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      VVH_OUT: vv-hourly.json
-      VVH_KEEP: '30'
+      BILLBOARD_OUT: billboard.json
+      BILLBOARD_SHOW: 嫁金钗
+      BILLBOARD_KEEP: '1000'
     steps:
       - uses: actions/checkout@v4
         with:
-          # 默认只拉 1 层，push 被拒要 rebase 时不够用；这仓库就几个文件，全量便宜。
+          # 默认只拉 1 层，rebase 撞车时不够用；这个仓库就几个文件，全量便宜。
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      # 手点永远放行 —— 不然他下午 14:45 点一下会被这道护栏吃掉，看起来像"点了没反应"。
+      # 榜单每半小时都在动，所以不能像百度那条一样"asof 没前进就跳过"。
+      # 这里只挡一种情况：距上一条 run 不足 GAP 分钟（手点、或备份 schedule 和主闹钟撞车）。
+      # GAP=20 < 30 的节拍，正常排班一格都不会被误杀。
+      # API 没答话就当没有上一条：护栏失效但采集照跑，反过来一个 curl 抖动能让榜停更几天。
       - name: 要不要跑
         id: need
+        env:
+          WF: billboard.yml       # API 认的是工作流文件名，不是 name 字段
+          GAP: '20'
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-            echo "skip=false" >> "$GITHUB_OUTPUT"; echo "手点，直接真跑"
+          curl -sS -m 20 -H "Authorization: Bearer $GITHUB_TOKEN" \
+               -H "Accept: application/vnd.github+json" \
+               -o _runs.json \
+               "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/workflows/$WF/runs?per_page=10" || :
+          since=$(node -p "try{const j=JSON.parse(require('fs').readFileSync('_runs.json','utf8'));const m=(j.workflow_runs||[]).filter(r=>r.id!==+process.env.GITHUB_RUN_ID).map(r=>(Date.now()-Date.parse(r.created_at))/6e4);m.length?Math.floor(Math.min(...m)):9999}catch(e){9999}")
+          case "$since" in ''|*[!0-9]*) since=9999 ;; esac
+          echo "距上一条 run $since 分钟（下限 $GAP）"
+          if [ "$since" -lt "$GAP" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"; echo "距上次不足 $GAP 分钟，这发不重复采样"
           else
-            # lastRun 是采集脚本写的、只有 push 成功才会前进，所以它同时是水位线。
-            # 文件还不存在（第一天）或读不出时间都算 9999 分钟 = 真跑。
-            gap=$(node -e 'try{const j=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));const t=Date.parse(j.lastRun||j.fetchedAt||"");console.log(isNaN(t)?9999:Math.floor((Date.now()-t)/6e4))}catch(e){console.log(9999)}' "$VVH_OUT")
-            case "$gap" in ""|*[!0-9]*) gap=9999;; esac
-            echo "距上次成功落地 $gap 分钟"
-            if [ "$gap" -lt 45 ]; then
-              echo "skip=true" >> "$GITHUB_OUTPUT"; echo "刚落地过，这一拍不重复攒，收工"
-            else
-              echo "skip=false" >> "$GITHUB_OUTPUT"; echo "超过 45 分钟没落地，真跑"
-            fi
+            echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # 走 Worker 的 /mtop 签名代理：灯塔那套接口要 mtop h5 现签的 sign，
-      # 浏览器端也是走同一个口子，所以这里不配任何 secret。
+      # 默认就是正式跑，上传完什么都不用改，手动 Run 一次即可。
+      # 只有一种情况要动这一行：正式跑挂了、要分清是"机房 IP 被优酷拒"还是"脚本本身有问题"，
+      # 就把 run 改成 `BILLBOARD_PROBE=1 node fetch_billboard.mjs` —— 探测模式取数、打印、
+      # 但不写文件也不提交。
+      #   PROBE OK · ... 第1名 ...    = IP 是干净的，问题在脚本这边
+      #   签名三轮没通过 / 解析出 0 条 = 海外 IP 被拒，这条链只能退回人工抄数
       - name: 抓取
         if: steps.need.outputs.skip != 'true'
-        run: node fetch_vv_hourly.mjs
+        run: node fetch_billboard.mjs
 
       - name: 提交结果
         if: steps.need.outputs.skip != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          [ -f "$VVH_OUT" ] || { echo "::notice::没有产出文件，跳过提交（探测模式或抓取失败）"; exit 0; }
+          [ -f "$BILLBOARD_OUT" ] || { echo "::notice::没有产出文件，跳过提交（探测模式或抓取失败）"; exit 0; }
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$VVH_OUT"
-          git diff --cached --quiet && { echo "这一格和上一格完全相同，不提交"; exit 0; }
-          git commit -m "灯塔正片播放分时 $(TZ=Asia/Shanghai date '+%F %H:%M')"
-          # 同一个仓库三条工作流都在推 main（这条写的是 vv-hourly.json），实测两发落地只差 1~4 秒。
+          git add "$BILLBOARD_OUT"
+          git diff --cached --quiet && { echo "这一格和上一格数值完全相同，不提交"; exit 0; }
+          git commit -m "畅销榜采样 $(TZ=Asia/Shanghai date '+%F %H:%M')"
+          # 采样史全在这个 json 里。先 commit 再 rebase，工作树才是干净的；
+          # 绝不 force —— 覆盖掉攒了几天的曲线比少一个点严重得多。
+          # 同一个仓库三条工作流都在推 main（这条写的是 billboard.json），实测两发落地只差 1~4 秒。
           # pull --rebase 只挡得住"rebase 之前别人已经推完"那一半，挡不住 rebase 之后、
           # push 之前那一秒：10-20 21:31 那次红叉就是这个 —— 日志里 rebase 报 up to date，
           # 紧接着 push 撞上别人刚推的 25fb733，报 cannot lock ref。所以整段带随机退避重试。
-          # 这条丢一格不心疼：下一拍是把当天已闭合的格子整份重读一遍。
+          # 这条比另外两条要紧：畅销榜是台阶式跳的，丢的那一发补不回来。
           n=0
           while [ "$n" -lt 4 ]; do
             n=$((n+1))
@@ -112,3 +128,55 @@ jobs:
           done
           echo "::error::四次都没挤进 main，这一轮不推（红叉留到真出事的时候才看）"
           exit 1
+
+  # 云合评级 —— 这份文件里的第二个采集。放进来而不是新开一条工作流，是因为它的节拍要和
+  # 畅销榜那条一样是"全天每半小时"（评级几点出档没人知道，只能全天盯），而这条工作流的
+  # 闹钟本来就是全天那一档；新开一条就要动 Worker 的派发名单，不值当。
+  # 取数同样匿名：一个 POST、没有 cookie、没有 secret、没有浏览器。
+  # needs: refresh 串行 —— 两条都要往 main 推，同一轮里并发就是撞车（10-20 那个红叉的成因）。
+  # if: always() —— 优酷那格挂了不该连着把评级也带停。
+  yunhe:
+    needs: refresh
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      YUNHE_OUT: yunhe.json
+      YUNHE_NAMEID: '8746798'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 抓取
+        run: node fetch_yunhe.mjs
+
+      - name: 提交结果
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          [ -f "$YUNHE_OUT" ] || { echo "::notice::没有产出文件，跳过提交（抓取失败或探测模式）"; exit 0; }
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$YUNHE_OUT"
+          # 脚本自己已经挡掉了"既不跨日也没变档"那一拍，不会写出一个只有时间戳动了的文件；
+          # 这里这道判断是第二层：真没字节变化就不提交，别留一堆空 commit。
+          git diff --cached --quiet && { echo "这一拍没有新档位、也没跨日，不提交"; exit 0; }
+          git commit -m "云合评级 $(TZ=Asia/Shanghai date '+%F %H:%M')"
+          # 同上：评级史全在这个 json 里，接口只回最近 1~2 天，覆盖掉就永远补不回来。
+          n=0
+          while [ "$n" -lt 4 ]; do
+            n=$((n+1))
+            if git pull --rebase origin "$GITHUB_REF_NAME" && git push; then
+              echo "第 $n 次尝试推上去了"; exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 6 + 3))
+          done
+          echo "::error::四次都没挤进 main，这一轮不推"
+          exit 1
+
