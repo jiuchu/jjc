@@ -494,7 +494,7 @@ const CONFIG = {
      Cloudflare 免费额度 10 万请求/天是整个账号共享的，两个面板加所有轮询都算在里面，
      之前两边全程开秒级，一天烧到 9 万，直接 1027 停摆。
      heatLive/heat 是第二对、dengta 是日榜（10 分钟足够），节拍按下面的实测增速定。 */
-  refresh: { dengta: 600e3, live: 3e3, idle: 15e3, ssr: 10 * 60e3, heatLive: 120e3, heat: 600e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3, baidu: 300e3, bb: 300e3, vvh: 300e3, qm: 1800e3 },
+  refresh: { dengta: 600e3, live: 3e3, idle: 15e3, ssr: 10 * 60e3, heatLive: 120e3, heat: 600e3, douban: 30 * 60e3, kuyun: 15e3, epg: 60e3, baidu: 300e3, bb: 300e3, vvh: 300e3, qm: 1800e3, yh: 1800e3 },
   liveWindow: [21.4, 23.5],         // VV 秒级只给 CCTV-8 那两集：21:24 提要、21:29–22:19、22:21–23:11（10-19/20/21 三天节目单同一格）
   /* ⚠ 这一档原先是 [18, 24]，理由是 10-16 首播那几天优酷 18:00 放量，注释却写着"电视黄金档"——
      可 CCTV-8 从第一天起就是 21:29 开，18:00 从来不是电视档。10-17 网播挪到中午 12:00 之后，
@@ -981,6 +981,11 @@ const vvCard = raw => { const v = +raw;
 const tidyCjk = s => (s || '').replace(/([一-龥])[ \u3000]+(?=[一-龥])/g, '$1');
 function pad2(n) { return String(n).padStart(2, '0'); }
 
+/* 云合档位从高到低的序：用来算「升一档 / 降一档」那个箭头。
+   表里没有的字母（上游哪天加了新档）就返回 null —— 宁可不画箭头，也不猜它比 A 高还是低。 */
+const YH_ORDER = ['S+', 'S', 'A+', 'A', 'B+', 'B', 'C+', 'C', 'D'];
+const yhRank = lv => { const i = YH_ORDER.indexOf(String(lv || '').toUpperCase()); return i < 0 ? null : i; };
+
 const CARDS = [
   { k: 'youkuHot',  name: '优酷实时热度',   c: 'var(--youku)', ico: 'M12 2a10 10 0 100 20 10 10 0 000-20zm0 4a6 6 0 110 12 6 6 0 010-12z' },
   { k: 'todayVv',   name: '今日实时播放量', c: 'var(--gold)',  ico: 'M3 17l5-6 4 4 5-7 4 5V3H3v14z' },
@@ -994,6 +999,7 @@ const CARDS = [
   { k: 'bbWeek',    name: '七日拉新榜',     c: '#7ee0c0',      ico: 'M5 3h14v4a7 7 0 01-14 0V3zm2 12h10v3H7v-3z' },
   { k: 'bbYear',    name: '年度拉新榜',     c: 'var(--gold)',  ico: 'M12 2l2.6 6.3H21l-5.2 4.1 1.9 6.6L12 15.3 6.3 19l1.9-6.6L3 8.3h6.4z' },
   { k: 'ky',        name: '酷云实时收视',   c: '#ff8ab7',      ico: 'M3 5h18v11H3V5zm5 13h8v2H8v-2z' },
+  { k: 'yhLevel',   name: '云合评级',       c: '#b6a8ff',      ico: 'M12 2l8 3v6.2c0 4.9-3.4 8.6-8 10.8-4.6-2.2-8-5.9-8-10.8V5l8-3zm-1 12.6l4.2-4.4-1.4-1.4L11 12.4 9.2 10.6l-1.4 1.4L11 14.6z' },
   { k: 'douban',    name: '豆瓣评分',       c: '#5fd4a3',      ico: 'M4 4h16v4H4V4zm0 6h16v10H4V10z' }
 ];
 
@@ -1046,6 +1052,22 @@ function cardVals() {
     ky:       { v: S.kuyun ? (S.kuyun.rating * 100).toFixed(4) : null, u: S.kuyun ? '%' : '',
                 sub: S.kuyun ? S.kuyun.tvn + ' · 全国第 ' + S.kuyun.rank + ' · ' + (S.kuyun.time || '').slice(11, 19)
                              : (src['酷云'] && !src['酷云'].ok ? src['酷云'].msg : '') },
+    /* 卡片位上只放那个字母。上游未登录时同一部剧连调三次，level 三次全同、
+       minValue/maxValue/position 三次全不一样，所以那三个数既没进档案、也不上图。 */
+    yhLevel:  (() => {
+      const D = YH.days;
+      if (!D.length) return { v: '未出',
+        sub: YH.at ? '本剧还没出档 · 检查于 ' + YH.at.slice(5, 16) : '评级档案建立中' };
+      const last = D[D.length - 1], prev = D.length > 1 ? D[D.length - 2] : null;
+      const r1 = yhRank(last.level), r2 = prev ? yhRank(prev.level) : null;
+      const dr = (r1 != null && r2 != null) ? r2 - r1 : null;   /* 序小=档高，所以是 r2-r1 */
+      const out = { v: last.level };
+      if (dr) { out.d = dr; out.du = ' 档'; out.dl = '对 ' + prev.date.slice(5) + ' 那档'; }
+      out.sub = last.date.slice(5) + ' 那天的评级' +
+        (!prev ? ' · 档案里第一天' : dr === 0 ? ' · 与前一日同档' : dr === null ? ' · 与前一日不同档' : '') +
+        (YH.empty ? ' · 最新一天还没出' : '') + ' · 检查于 ' + YH.at.slice(5, 16);
+      return out;
+    })(),
     baiduIdx: (() => {
       const rw = BAIDU_INDEX.rows;
       if (!rw.length) return { v: null, sub: BAIDU_INDEX.note || '暂无数据' };
@@ -1865,6 +1887,24 @@ function renderQimai() {
 }
 
 /* ============================================================
+   云合评级（每天一档 · 只取那个字母）
+   ============================================================ */
+const YH = { days: [], at: '', empty: null, note: '' };
+/* 同源静态 yunhe.json，和下载量那格同一个道理：缺文件是「档案还在建立」的正常状态，
+   自己吞异常、不进 src 表、不点页顶那条链路报错条。
+   上游一次只回最近 1~2 天，历史是采集端一天天攒出来的，所以这里的 days 会比接口给的长。 */
+async function loadYunhe() {
+  try {
+    const r = await fetch('./yunhe.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    YH.days = (Array.isArray(j.days) ? j.days : []).filter(x => x && x.date && x.level);
+    YH.at = String(j.at || ''); YH.empty = j.empty === true; YH.note = '';
+  } catch (e) { YH.note = '暂无数据'; YH.days = []; YH.at = ''; }
+  renderKPI();
+}
+
+/* ============================================================
    调度
    ============================================================ */
 const revealJobs = [];
@@ -1894,7 +1934,8 @@ async function refreshAll() {
     safe('央视节目单', loadEpg),
     safe('畅销榜', loadBillboard),
     safe('正片分时', loadVvHourly),
-    safe('下载量', loadQimai)
+    safe('下载量', loadQimai),
+    safe('云合评级', loadYunhe)
   ]);
   stamp();
   btn.disabled = false; btn.innerHTML = '刷新全部数据';
@@ -1971,7 +2012,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') dm.classList
 (async function boot() {
   decorate(); tickCountdown(); setInterval(tickCountdown, 1000);
   renderKPI(); renderBaiduChart(); renderHonor();
-  loadBaiduIndex(); loadBillboard(); loadVvHourly(); loadQimai();
+  loadBaiduIndex(); loadBillboard(); loadVvHourly(); loadQimai(); loadYunhe();
   await refreshAll();
   liveLoop();
   every(CONFIG.refresh.dengta, () => safe('灯塔', loadDengta).then(stamp), true);
@@ -1995,6 +2036,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') dm.classList
   every(CONFIG.refresh.vvh,    () => safe('正片分时', loadVvHourly), true);
   /* 下载量那份一周才动一次（要人工贴新链接），30 分钟看一回足够，别和半小时那几格混节拍。 */
   every(CONFIG.refresh.qm,     () => safe('下载量', loadQimai), true);
+  /* 评级一天最多动一档，上游出档的时刻还不固定 —— 30 分钟看一次这份同源 json 够了。 */
+  every(CONFIG.refresh.yh,     () => safe('云合评级', loadYunhe), true);
   /* 回前台只让 revealJobs 按"各自周期到点没到点"补，不要再无脑全量。
      原来这里挂了一句 `if (Date.now() - src['灯塔'].at > 90e3) refreshAll()`：
      src['灯塔'].at 只有 600 秒一轮的 loadDengta 会写，所以切回来几乎必然判定"太老"，
