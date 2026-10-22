@@ -5,43 +5,43 @@
  "asof": "2026-10-23",
  "latest": {
   "date": "2026-10-23",
-  "hm": "06:31",
-  "iso": "2026-10-23 06:31 +08",
+  "hm": "06:42",
+  "iso": "2026-10-23 06:42 +08",
   "weekRank": 1,
-  "weekValue": 4754.87,
+  "weekValue": 4755.64,
   "yearRank": 6,
-  "yearValue": 3856.45
+  "yearValue": 3856.47
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4754.87
+   "value": 4755.64
   },
   {
    "rank": 2,
    "title": "无可替代",
-   "value": 3619.98
+   "value": 3619.96
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 3616.89
+   "value": 3616.83
   },
   {
    "rank": 4,
    "title": "此处通往繁星",
-   "value": 3586.97
+   "value": 3586.96
   },
   {
    "rank": 5,
    "title": "九门",
-   "value": 3577.86
+   "value": 3577.85
   },
   {
    "rank": 6,
    "title": "冬城猎凶",
-   "value": 3576.75
+   "value": 3576.78
   },
   {
    "rank": 7,
@@ -56,7 +56,7 @@
   {
    "rank": 9,
    "title": "翘楚",
-   "value": 3570.36
+   "value": 3570.37
   },
   {
    "rank": 10,
@@ -86,17 +86,17 @@
   {
    "rank": 15,
    "title": "春花焰",
-   "value": 3560
+   "value": 3560.03
   },
   {
    "rank": 16,
    "title": "师兄太稳健",
-   "value": 3559.52
+   "value": 3559.55
   },
   {
    "rank": 17,
    "title": "千香",
-   "value": 3559.49
+   "value": 3559.48
   },
   {
    "rank": 18,
@@ -106,7 +106,7 @@
   {
    "rank": 19,
    "title": "以法之名",
-   "value": 3552.03
+   "value": 3552.09
   },
   {
    "rank": 20,
@@ -123,7 +123,7 @@
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 5123.01
+   "value": 5123.02
   },
   {
    "rank": 3,
@@ -143,7 +143,7 @@
   {
    "rank": 6,
    "title": "嫁金钗",
-   "value": 3856.45
+   "value": 3856.47
   },
   {
    "rank": 7,
@@ -1632,9 +1632,17 @@
    "weekValue": 4754.87,
    "yearRank": 6,
    "yearValue": 3856.45
+  },
+  {
+   "date": "2026-10-23",
+   "hm": "06:42",
+   "weekRank": 1,
+   "weekValue": 4755.64,
+   "yearRank": 6,
+   "yearValue": 3856.47
   }
  ],
- "fetchedAt": "2026-10-22T22:31:09.201Z",
- "lastRun": "2026-10-22T22:31:09.201Z",
+ "fetchedAt": "2026-10-22T22:42:12.711Z",
+ "lastRun": "2026-10-22T22:42:12.711Z",
  "count": 20
 }
