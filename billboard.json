@@ -5,18 +5,18 @@
  "asof": "2026-10-24",
  "latest": {
   "date": "2026-10-24",
-  "hm": "04:01",
-  "iso": "2026-10-24 04:01 +08",
+  "hm": "04:20",
+  "iso": "2026-10-24 04:20 +08",
   "weekRank": 1,
-  "weekValue": 4649.93,
+  "weekValue": 4651.43,
   "yearRank": 6,
-  "yearValue": 4065.75
+  "yearValue": 4066.12
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4649.93
+   "value": 4651.43
   },
   {
    "rank": 2,
@@ -26,17 +26,17 @@
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3612.31
+   "value": 3612.28
   },
   {
    "rank": 4,
    "title": "此处通往繁星",
-   "value": 3585.62
+   "value": 3585.61
   },
   {
    "rank": 5,
    "title": "九门",
-   "value": 3583.31
+   "value": 3583.28
   },
   {
    "rank": 6,
@@ -46,7 +46,7 @@
   {
    "rank": 7,
    "title": "冬城猎凶",
-   "value": 3575.75
+   "value": 3575.74
   },
   {
    "rank": 8,
@@ -71,12 +71,12 @@
   {
    "rank": 12,
    "title": "难哄",
-   "value": 3566.42
+   "value": 3566.44
   },
   {
    "rank": 13,
    "title": "藏海传",
-   "value": 3564.17
+   "value": 3564.19
   },
   {
    "rank": 14,
@@ -96,12 +96,12 @@
   {
    "rank": 17,
    "title": "千香",
-   "value": 3554.27
+   "value": 3554.28
   },
   {
    "rank": 18,
    "title": "以法之名",
-   "value": 3550.33
+   "value": 3550.34
   },
   {
    "rank": 19,
@@ -111,7 +111,7 @@
   {
    "rank": 20,
    "title": "蜀锦人家",
-   "value": 3546.09
+   "value": 3546.1
   }
  ],
  "topYear": [
@@ -143,7 +143,7 @@
   {
    "rank": 6,
    "title": "嫁金钗",
-   "value": 4065.75
+   "value": 4066.12
   },
   {
    "rank": 7,
@@ -2016,9 +2016,17 @@
    "weekValue": 4649.93,
    "yearRank": 6,
    "yearValue": 4065.75
+  },
+  {
+   "date": "2026-10-24",
+   "hm": "04:20",
+   "weekRank": 1,
+   "weekValue": 4651.43,
+   "yearRank": 6,
+   "yearValue": 4066.12
   }
  ],
- "fetchedAt": "2026-10-23T20:01:09.150Z",
- "lastRun": "2026-10-23T20:01:09.150Z",
+ "fetchedAt": "2026-10-23T20:20:21.041Z",
+ "lastRun": "2026-10-23T20:20:21.041Z",
  "count": 20
 }
