@@ -5,53 +5,53 @@
  "asof": "2026-10-25",
  "latest": {
   "date": "2026-10-25",
-  "hm": "06:31",
-  "iso": "2026-10-25 06:31 +08",
+  "hm": "07:01",
+  "iso": "2026-10-25 07:01 +08",
   "weekRank": 1,
-  "weekValue": 4585.39,
+  "weekValue": 4585.09,
   "yearRank": 4,
-  "yearValue": 4265.02
+  "yearValue": 4265.68
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4585.39
+   "value": 4585.09
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3602.91
+   "value": 3602.98
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3602.24
+   "value": 3602.34
   },
   {
    "rank": 4,
    "title": "九门",
-   "value": 3584.32
+   "value": 3584.3
   },
   {
    "rank": 5,
    "title": "一瓯春",
-   "value": 3582.49
+   "value": 3582.51
   },
   {
    "rank": 6,
    "title": "此处通往繁星",
-   "value": 3578.12
+   "value": 3578.1
   },
   {
    "rank": 7,
    "title": "冬城猎凶",
-   "value": 3577.08
+   "value": 3577.06
   },
   {
    "rank": 8,
    "title": "翘楚",
-   "value": 3569.96
+   "value": 3569.97
   },
   {
    "rank": 9,
@@ -71,7 +71,7 @@
   {
    "rank": 12,
    "title": "难哄",
-   "value": 3567.27
+   "value": 3567.28
   },
   {
    "rank": 13,
@@ -81,32 +81,32 @@
   {
    "rank": 14,
    "title": "入青云",
-   "value": 3557.07
+   "value": 3557.08
   },
   {
    "rank": 15,
    "title": "春花焰",
-   "value": 3556.89
+   "value": 3556.92
   },
   {
    "rank": 16,
    "title": "师兄太稳健",
-   "value": 3553.77
+   "value": 3553.81
   },
   {
    "rank": 17,
    "title": "以法之名",
-   "value": 3550.73
+   "value": 3550.74
   },
   {
    "rank": 18,
    "title": "千香",
-   "value": 3550.28
+   "value": 3550.3
   },
   {
    "rank": 19,
    "title": "蜀锦人家",
-   "value": 3545.71
+   "value": 3545.74
   },
   {
    "rank": 20,
@@ -123,7 +123,7 @@
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 5123.46
+   "value": 5123.47
   },
   {
    "rank": 3,
@@ -133,7 +133,7 @@
   {
    "rank": 4,
    "title": "嫁金钗",
-   "value": 4265.02
+   "value": 4265.68
   },
   {
    "rank": 5,
@@ -173,7 +173,7 @@
   {
    "rank": 12,
    "title": "乡村爱情18",
-   "value": 3228.51
+   "value": 3228.52
   },
   {
    "rank": 13,
@@ -203,7 +203,7 @@
   {
    "rank": 18,
    "title": "无可替代",
-   "value": 2940.6
+   "value": 2940.62
   },
   {
    "rank": 19,
@@ -2504,9 +2504,17 @@
    "weekValue": 4585.39,
    "yearRank": 4,
    "yearValue": 4265.02
+  },
+  {
+   "date": "2026-10-25",
+   "hm": "07:01",
+   "weekRank": 1,
+   "weekValue": 4585.09,
+   "yearRank": 4,
+   "yearValue": 4265.68
   }
  ],
- "fetchedAt": "2026-10-24T22:31:07.799Z",
- "lastRun": "2026-10-24T22:31:07.799Z",
+ "fetchedAt": "2026-10-24T23:01:08.683Z",
+ "lastRun": "2026-10-24T23:01:08.683Z",
  "count": 20
 }
