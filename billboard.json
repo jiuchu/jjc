@@ -2480,9 +2480,17 @@
    "weekValue": 4584.72,
    "yearRank": 4,
    "yearValue": 4264
+  },
+  {
+   "date": "2026-10-25",
+   "hm": "05:31",
+   "weekRank": 1,
+   "weekValue": 4584.72,
+   "yearRank": 4,
+   "yearValue": 4264
   }
  ],
  "fetchedAt": "2026-10-24T21:31:08.787Z",
- "lastRun": "2026-10-24T21:31:08.787Z",
+ "lastRun": "2026-10-24T21:31:50.346Z",
  "count": 20
 }
