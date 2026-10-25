@@ -5,33 +5,33 @@
  "asof": "2026-10-26",
  "latest": {
   "date": "2026-10-26",
-  "hm": "03:00",
-  "iso": "2026-10-26 03:00 +08",
+  "hm": "03:30",
+  "iso": "2026-10-26 03:30 +08",
   "weekRank": 1,
-  "weekValue": 4542.58,
+  "weekValue": 4544.04,
   "yearRank": 3,
-  "yearValue": 4424.82
+  "yearValue": 4424.87
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4542.58
+   "value": 4544.04
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3608.8
+   "value": 3608.72
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3597.4
+   "value": 3597.49
   },
   {
    "rank": 4,
    "title": "九门",
-   "value": 3584.29
+   "value": 3584.28
   },
   {
    "rank": 5,
@@ -41,7 +41,7 @@
   {
    "rank": 6,
    "title": "冬城猎凶",
-   "value": 3578.19
+   "value": 3578.16
   },
   {
    "rank": 7,
@@ -56,7 +56,7 @@
   {
    "rank": 9,
    "title": "月鳞绮纪",
-   "value": 3569.75
+   "value": 3569.77
   },
   {
    "rank": 10,
@@ -66,12 +66,12 @@
   {
    "rank": 11,
    "title": "悬案",
-   "value": 3567.72
+   "value": 3567.73
   },
   {
    "rank": 12,
    "title": "难哄",
-   "value": 3567.62
+   "value": 3567.64
   },
   {
    "rank": 13,
@@ -81,37 +81,37 @@
   {
    "rank": 14,
    "title": "入青云",
-   "value": 3557.19
+   "value": 3557.21
   },
   {
    "rank": 15,
    "title": "春花焰",
-   "value": 3554.81
+   "value": 3554.82
   },
   {
    "rank": 16,
    "title": "以法之名",
-   "value": 3554.1
+   "value": 3554.19
   },
   {
    "rank": 17,
    "title": "师兄太稳健",
-   "value": 3553.88
+   "value": 3553.89
   },
   {
    "rank": 18,
    "title": "千香",
-   "value": 3546.83
+   "value": 3546.86
   },
   {
    "rank": 19,
    "title": "雨霖铃",
-   "value": 3544.81
+   "value": 3544.82
   },
   {
    "rank": 20,
    "title": "蜀锦人家",
-   "value": 3543.32
+   "value": 3543.35
   }
  ],
  "topYear": [
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4424.82
+   "value": 4424.87
   },
   {
    "rank": 4,
@@ -148,7 +148,7 @@
   {
    "rank": 7,
    "title": "翘楚",
-   "value": 3652.95
+   "value": 3652.96
   },
   {
    "rank": 8,
@@ -203,12 +203,12 @@
   {
    "rank": 18,
    "title": "无可替代",
-   "value": 2946.85
+   "value": 2946.86
   },
   {
    "rank": 19,
    "title": "我的山与海",
-   "value": 2934.15
+   "value": 2934.16
   },
   {
    "rank": 20,
@@ -2872,9 +2872,17 @@
    "weekValue": 4542.58,
    "yearRank": 3,
    "yearValue": 4424.82
+  },
+  {
+   "date": "2026-10-26",
+   "hm": "03:30",
+   "weekRank": 1,
+   "weekValue": 4544.04,
+   "yearRank": 3,
+   "yearValue": 4424.87
   }
  ],
- "fetchedAt": "2026-10-25T19:00:43.365Z",
- "lastRun": "2026-10-25T19:00:43.365Z",
+ "fetchedAt": "2026-10-25T19:30:42.574Z",
+ "lastRun": "2026-10-25T19:30:42.574Z",
  "count": 20
 }
