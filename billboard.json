@@ -5,10 +5,10 @@
  "asof": "2026-10-26",
  "latest": {
   "date": "2026-10-26",
-  "hm": "06:30",
-  "iso": "2026-10-26 06:30 +08",
+  "hm": "07:00",
+  "iso": "2026-10-26 07:00 +08",
   "weekRank": 1,
-  "weekValue": 4546.52,
+  "weekValue": 4545.83,
   "yearRank": 3,
   "yearValue": 4424.95
  },
@@ -16,37 +16,37 @@
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4546.52
+   "value": 4545.83
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3608.49
+   "value": 3608.42
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3597.73
+   "value": 3597.82
   },
   {
    "rank": 4,
    "title": "九门",
-   "value": 3584.19
+   "value": 3584.17
   },
   {
    "rank": 5,
    "title": "此处通往繁星",
-   "value": 3583.9
+   "value": 3583.91
   },
   {
    "rank": 6,
    "title": "冬城猎凶",
-   "value": 3578.08
+   "value": 3578.03
   },
   {
    "rank": 7,
    "title": "一瓯春",
-   "value": 3577.03
+   "value": 3577.06
   },
   {
    "rank": 8,
@@ -61,7 +61,7 @@
   {
    "rank": 10,
    "title": "当我飞奔向你",
-   "value": 3568.5
+   "value": 3568.51
   },
   {
    "rank": 11,
@@ -86,32 +86,32 @@
   {
    "rank": 15,
    "title": "春花焰",
-   "value": 3555.04
+   "value": 3555.05
   },
   {
    "rank": 16,
    "title": "以法之名",
-   "value": 3554.3
+   "value": 3554.39
   },
   {
    "rank": 17,
    "title": "师兄太稳健",
-   "value": 3553.89
+   "value": 3553.94
   },
   {
    "rank": 18,
    "title": "千香",
-   "value": 3546.87
+   "value": 3546.88
   },
   {
    "rank": 19,
    "title": "雨霖铃",
-   "value": 3544.79
+   "value": 3544.81
   },
   {
    "rank": 20,
    "title": "蜀锦人家",
-   "value": 3543.43
+   "value": 3543.44
   }
  ],
  "topYear": [
@@ -203,7 +203,7 @@
   {
    "rank": 18,
    "title": "无可替代",
-   "value": 2946.89
+   "value": 2946.9
   },
   {
    "rank": 19,
@@ -2944,9 +2944,17 @@
    "weekValue": 4546.52,
    "yearRank": 3,
    "yearValue": 4424.95
+  },
+  {
+   "date": "2026-10-26",
+   "hm": "07:00",
+   "weekRank": 1,
+   "weekValue": 4545.83,
+   "yearRank": 3,
+   "yearValue": 4424.95
   }
  ],
- "fetchedAt": "2026-10-25T22:28:39.953Z",
- "lastRun": "2026-10-25T22:30:41.271Z",
+ "fetchedAt": "2026-10-25T23:00:42.280Z",
+ "lastRun": "2026-10-25T23:00:42.280Z",
  "count": 20
 }
