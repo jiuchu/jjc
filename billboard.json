@@ -5,38 +5,38 @@
  "asof": "2026-10-27",
  "latest": {
   "date": "2026-10-27",
-  "hm": "03:11",
-  "iso": "2026-10-27 03:11 +08",
+  "hm": "03:30",
+  "iso": "2026-10-27 03:30 +08",
   "weekRank": 1,
-  "weekValue": 4492.62,
+  "weekValue": 4492.57,
   "yearRank": 3,
-  "yearValue": 4573.25
+  "yearValue": 4573.31
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4492.62
+   "value": 4492.57
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3600.4
+   "value": 3600.46
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3593.17
+   "value": 3593.2
   },
   {
    "rank": 4,
    "title": "九门",
-   "value": 3583.94
+   "value": 3583.96
   },
   {
    "rank": 5,
    "title": "冬城猎凶",
-   "value": 3580.2
+   "value": 3580.17
   },
   {
    "rank": 6,
@@ -76,7 +76,7 @@
   {
    "rank": 13,
    "title": "藏海传",
-   "value": 3567.06
+   "value": 3567.07
   },
   {
    "rank": 14,
@@ -86,12 +86,12 @@
   {
    "rank": 15,
    "title": "以法之名",
-   "value": 3556.18
+   "value": 3556.22
   },
   {
    "rank": 16,
    "title": "春花焰",
-   "value": 3554.32
+   "value": 3554.31
   },
   {
    "rank": 17,
@@ -101,17 +101,17 @@
   {
    "rank": 18,
    "title": "雨霖铃",
-   "value": 3543.2
+   "value": 3543.21
   },
   {
    "rank": 19,
    "title": "千香",
-   "value": 3542.96
+   "value": 3542.98
   },
   {
    "rank": 20,
    "title": "蜀锦人家",
-   "value": 3541.75
+   "value": 3541.77
   }
  ],
  "topYear": [
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4573.25
+   "value": 4573.31
   },
   {
    "rank": 4,
@@ -208,7 +208,7 @@
   {
    "rank": 19,
    "title": "我的山与海",
-   "value": 2934.53
+   "value": 2934.54
   },
   {
    "rank": 20,
@@ -3304,9 +3304,17 @@
    "weekValue": 4492.62,
    "yearRank": 3,
    "yearValue": 4573.25
+  },
+  {
+   "date": "2026-10-27",
+   "hm": "03:30",
+   "weekRank": 1,
+   "weekValue": 4492.57,
+   "yearRank": 3,
+   "yearValue": 4573.31
   }
  ],
- "fetchedAt": "2026-10-26T19:11:04.989Z",
- "lastRun": "2026-10-26T19:11:04.989Z",
+ "fetchedAt": "2026-10-26T19:30:49.661Z",
+ "lastRun": "2026-10-26T19:30:49.661Z",
  "count": 20
 }
