@@ -5,38 +5,38 @@
  "asof": "2026-10-27",
  "latest": {
   "date": "2026-10-27",
-  "hm": "04:01",
-  "iso": "2026-10-27 04:01 +08",
+  "hm": "04:30",
+  "iso": "2026-10-27 04:30 +08",
   "weekRank": 1,
-  "weekValue": 4492.14,
+  "weekValue": 4491.71,
   "yearRank": 3,
-  "yearValue": 4573.41
+  "yearValue": 4573.47
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4492.14
+   "value": 4491.71
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3600.57
+   "value": 3600.66
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3593.22
+   "value": 3593.25
   },
   {
    "rank": 4,
    "title": "九门",
-   "value": 3583.98
+   "value": 3584
   },
   {
    "rank": 5,
    "title": "冬城猎凶",
-   "value": 3580.17
+   "value": 3580.16
   },
   {
    "rank": 6,
@@ -66,7 +66,7 @@
   {
    "rank": 11,
    "title": "难哄",
-   "value": 3567.54
+   "value": 3567.55
   },
   {
    "rank": 12,
@@ -81,7 +81,7 @@
   {
    "rank": 14,
    "title": "入青云",
-   "value": 3557.42
+   "value": 3557.43
   },
   {
    "rank": 15,
@@ -96,22 +96,22 @@
   {
    "rank": 17,
    "title": "师兄太稳健",
-   "value": 3552.42
+   "value": 3552.47
   },
   {
    "rank": 18,
    "title": "雨霖铃",
-   "value": 3543.22
+   "value": 3543.24
   },
   {
    "rank": 19,
    "title": "千香",
-   "value": 3543.01
+   "value": 3543.07
   },
   {
    "rank": 20,
    "title": "蜀锦人家",
-   "value": 3541.77
+   "value": 3541.79
   }
  ],
  "topYear": [
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4573.41
+   "value": 4573.47
   },
   {
    "rank": 4,
@@ -3320,9 +3320,17 @@
    "weekValue": 4492.14,
    "yearRank": 3,
    "yearValue": 4573.41
+  },
+  {
+   "date": "2026-10-27",
+   "hm": "04:30",
+   "weekRank": 1,
+   "weekValue": 4491.71,
+   "yearRank": 3,
+   "yearValue": 4573.47
   }
  ],
- "fetchedAt": "2026-10-26T20:01:38.706Z",
- "lastRun": "2026-10-26T20:01:38.706Z",
+ "fetchedAt": "2026-10-26T20:30:46.215Z",
+ "lastRun": "2026-10-26T20:30:46.215Z",
  "count": 20
 }
