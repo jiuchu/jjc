@@ -5,38 +5,38 @@
  "asof": "2026-10-27",
  "latest": {
   "date": "2026-10-27",
-  "hm": "02:00",
-  "iso": "2026-10-27 02:00 +08",
+  "hm": "02:30",
+  "iso": "2026-10-27 02:30 +08",
   "weekRank": 1,
-  "weekValue": 4489.29,
+  "weekValue": 4491.49,
   "yearRank": 3,
-  "yearValue": 4572.67
+  "yearValue": 4572.99
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4489.29
+   "value": 4491.49
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3600.01
+   "value": 3600.21
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3592.92
+   "value": 3593.01
   },
   {
    "rank": 4,
    "title": "九门",
-   "value": 3583.86
+   "value": 3583.89
   },
   {
    "rank": 5,
    "title": "冬城猎凶",
-   "value": 3580.3
+   "value": 3580.27
   },
   {
    "rank": 6,
@@ -46,7 +46,7 @@
   {
    "rank": 7,
    "title": "一瓯春",
-   "value": 3575.53
+   "value": 3575.51
   },
   {
    "rank": 8,
@@ -56,12 +56,12 @@
   {
    "rank": 9,
    "title": "月鳞绮纪",
-   "value": 3569.5
+   "value": 3569.51
   },
   {
    "rank": 10,
    "title": "当我飞奔向你",
-   "value": 3568.11
+   "value": 3568.12
   },
   {
    "rank": 11,
@@ -81,17 +81,17 @@
   {
    "rank": 14,
    "title": "入青云",
-   "value": 3557.34
+   "value": 3557.38
   },
   {
    "rank": 15,
    "title": "以法之名",
-   "value": 3556.03
+   "value": 3556.08
   },
   {
    "rank": 16,
    "title": "春花焰",
-   "value": 3554.16
+   "value": 3554.27
   },
   {
    "rank": 17,
@@ -101,17 +101,17 @@
   {
    "rank": 18,
    "title": "雨霖铃",
-   "value": 3543.1
+   "value": 3543.19
   },
   {
    "rank": 19,
    "title": "千香",
-   "value": 3542.92
+   "value": 3542.95
   },
   {
    "rank": 20,
    "title": "蜀锦人家",
-   "value": 3541.69
+   "value": 3541.7
   }
  ],
  "topYear": [
@@ -123,12 +123,12 @@
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 5127.71
+   "value": 5127.72
   },
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4572.67
+   "value": 4572.99
   },
   {
    "rank": 4,
@@ -158,7 +158,7 @@
   {
    "rank": 9,
    "title": "暗河传",
-   "value": 3394.5
+   "value": 3394.51
   },
   {
    "rank": 10,
@@ -168,7 +168,7 @@
   {
    "rank": 11,
    "title": "入青云",
-   "value": 3233.82
+   "value": 3233.83
   },
   {
    "rank": 12,
@@ -3280,9 +3280,17 @@
    "weekValue": 4489.29,
    "yearRank": 3,
    "yearValue": 4572.67
+  },
+  {
+   "date": "2026-10-27",
+   "hm": "02:30",
+   "weekRank": 1,
+   "weekValue": 4491.49,
+   "yearRank": 3,
+   "yearValue": 4572.99
   }
  ],
- "fetchedAt": "2026-10-26T18:00:45.396Z",
- "lastRun": "2026-10-26T18:00:45.396Z",
+ "fetchedAt": "2026-10-26T18:30:42.504Z",
+ "lastRun": "2026-10-26T18:30:42.504Z",
  "count": 20
 }
