@@ -5,43 +5,43 @@
  "asof": "2026-10-27",
  "latest": {
   "date": "2026-10-27",
-  "hm": "07:17",
-  "iso": "2026-10-27 07:17 +08",
+  "hm": "07:30",
+  "iso": "2026-10-27 07:30 +08",
   "weekRank": 1,
-  "weekValue": 4491.54,
+  "weekValue": 4492.38,
   "yearRank": 3,
-  "yearValue": 4573.7
+  "yearValue": 4573.72
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4491.54
+   "value": 4492.38
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3601.21
+   "value": 3601.34
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3593.57
+   "value": 3593.69
   },
   {
    "rank": 4,
    "title": "九门",
-   "value": 3584.08
+   "value": 3584.09
   },
   {
    "rank": 5,
    "title": "冬城猎凶",
-   "value": 3580.09
+   "value": 3580.07
   },
   {
    "rank": 6,
    "title": "此处通往繁星",
-   "value": 3576.53
+   "value": 3576.54
   },
   {
    "rank": 7,
@@ -51,7 +51,7 @@
   {
    "rank": 8,
    "title": "翘楚",
-   "value": 3569.78
+   "value": 3569.79
   },
   {
    "rank": 9,
@@ -66,12 +66,12 @@
   {
    "rank": 11,
    "title": "难哄",
-   "value": 3567.56
+   "value": 3567.57
   },
   {
    "rank": 12,
    "title": "悬案",
-   "value": 3567.56
+   "value": 3567.57
   },
   {
    "rank": 13,
@@ -86,22 +86,22 @@
   {
    "rank": 15,
    "title": "以法之名",
-   "value": 3556.28
+   "value": 3556.3
   },
   {
    "rank": 16,
    "title": "春花焰",
-   "value": 3554.42
+   "value": 3554.43
   },
   {
    "rank": 17,
    "title": "师兄太稳健",
-   "value": 3552.55
+   "value": 3552.56
   },
   {
    "rank": 18,
    "title": "雨霖铃",
-   "value": 3543.28
+   "value": 3543.3
   },
   {
    "rank": 19,
@@ -111,7 +111,7 @@
   {
    "rank": 20,
    "title": "蜀锦人家",
-   "value": 3541.87
+   "value": 3541.93
   }
  ],
  "topYear": [
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4573.7
+   "value": 4573.72
   },
   {
    "rank": 4,
@@ -203,7 +203,7 @@
   {
    "rank": 18,
    "title": "无可替代",
-   "value": 2950.02
+   "value": 2950.03
   },
   {
    "rank": 19,
@@ -3376,9 +3376,17 @@
    "weekValue": 4491.54,
    "yearRank": 3,
    "yearValue": 4573.7
+  },
+  {
+   "date": "2026-10-27",
+   "hm": "07:30",
+   "weekRank": 1,
+   "weekValue": 4492.38,
+   "yearRank": 3,
+   "yearValue": 4573.72
   }
  ],
- "fetchedAt": "2026-10-26T23:17:59.239Z",
- "lastRun": "2026-10-26T23:17:59.239Z",
+ "fetchedAt": "2026-10-26T23:30:42.796Z",
+ "lastRun": "2026-10-26T23:30:42.796Z",
  "count": 20
 }
