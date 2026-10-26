@@ -5,33 +5,33 @@
  "asof": "2026-10-27",
  "latest": {
   "date": "2026-10-27",
-  "hm": "03:30",
-  "iso": "2026-10-27 03:30 +08",
+  "hm": "04:01",
+  "iso": "2026-10-27 04:01 +08",
   "weekRank": 1,
-  "weekValue": 4492.57,
+  "weekValue": 4492.14,
   "yearRank": 3,
-  "yearValue": 4573.31
+  "yearValue": 4573.41
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4492.57
+   "value": 4492.14
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3600.46
+   "value": 3600.57
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3593.2
+   "value": 3593.22
   },
   {
    "rank": 4,
    "title": "九门",
-   "value": 3583.96
+   "value": 3583.98
   },
   {
    "rank": 5,
@@ -46,7 +46,7 @@
   {
    "rank": 7,
    "title": "一瓯春",
-   "value": 3575.5
+   "value": 3575.49
   },
   {
    "rank": 8,
@@ -66,12 +66,12 @@
   {
    "rank": 11,
    "title": "难哄",
-   "value": 3567.52
+   "value": 3567.54
   },
   {
    "rank": 12,
    "title": "悬案",
-   "value": 3567.52
+   "value": 3567.53
   },
   {
    "rank": 13,
@@ -81,7 +81,7 @@
   {
    "rank": 14,
    "title": "入青云",
-   "value": 3557.41
+   "value": 3557.42
   },
   {
    "rank": 15,
@@ -91,7 +91,7 @@
   {
    "rank": 16,
    "title": "春花焰",
-   "value": 3554.31
+   "value": 3554.33
   },
   {
    "rank": 17,
@@ -101,12 +101,12 @@
   {
    "rank": 18,
    "title": "雨霖铃",
-   "value": 3543.21
+   "value": 3543.22
   },
   {
    "rank": 19,
    "title": "千香",
-   "value": 3542.98
+   "value": 3543.01
   },
   {
    "rank": 20,
@@ -123,12 +123,12 @@
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 5127.74
+   "value": 5127.75
   },
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4573.31
+   "value": 4573.41
   },
   {
    "rank": 4,
@@ -153,7 +153,7 @@
   {
    "rank": 8,
    "title": "雨霖铃",
-   "value": 3409.67
+   "value": 3409.68
   },
   {
    "rank": 9,
@@ -3312,9 +3312,17 @@
    "weekValue": 4492.57,
    "yearRank": 3,
    "yearValue": 4573.31
+  },
+  {
+   "date": "2026-10-27",
+   "hm": "04:01",
+   "weekRank": 1,
+   "weekValue": 4492.14,
+   "yearRank": 3,
+   "yearValue": 4573.41
   }
  ],
- "fetchedAt": "2026-10-26T19:30:49.661Z",
- "lastRun": "2026-10-26T19:30:49.661Z",
+ "fetchedAt": "2026-10-26T20:01:38.706Z",
+ "lastRun": "2026-10-26T20:01:38.706Z",
  "count": 20
 }
