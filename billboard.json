@@ -5,33 +5,33 @@
  "asof": "2026-10-28",
  "latest": {
   "date": "2026-10-28",
-  "hm": "01:30",
-  "iso": "2026-10-28 01:30 +08",
+  "hm": "02:00",
+  "iso": "2026-10-28 02:00 +08",
   "weekRank": 1,
-  "weekValue": 4437.38,
+  "weekValue": 4436.14,
   "yearRank": 3,
-  "yearValue": 4704.05
+  "yearValue": 4705.97
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4437.38
+   "value": 4436.14
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3605.21
+   "value": 3605.2
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3591.05
+   "value": 3591.19
   },
   {
    "rank": 4,
    "title": "此处通往繁星",
-   "value": 3582.94
+   "value": 3582.93
   },
   {
    "rank": 5,
@@ -41,22 +41,22 @@
   {
    "rank": 6,
    "title": "九门",
-   "value": 3580.48
+   "value": 3580.62
   },
   {
    "rank": 7,
    "title": "一瓯春",
-   "value": 3579.91
+   "value": 3579.87
   },
   {
    "rank": 8,
    "title": "翘楚",
-   "value": 3569.31
+   "value": 3569.32
   },
   {
    "rank": 9,
    "title": "月鳞绮纪",
-   "value": 3569.16
+   "value": 3569.17
   },
   {
    "rank": 10,
@@ -66,12 +66,12 @@
   {
    "rank": 11,
    "title": "难哄",
-   "value": 3567.34
+   "value": 3567.36
   },
   {
    "rank": 12,
    "title": "悬案",
-   "value": 3567.06
+   "value": 3567.07
   },
   {
    "rank": 13,
@@ -81,37 +81,37 @@
   {
    "rank": 14,
    "title": "以法之名",
-   "value": 3556.4
+   "value": 3556.52
   },
   {
    "rank": 15,
    "title": "入青云",
-   "value": 3556
+   "value": 3556.05
   },
   {
    "rank": 16,
    "title": "春花焰",
-   "value": 3551.58
+   "value": 3551.61
   },
   {
    "rank": 17,
    "title": "师兄太稳健",
-   "value": 3547.4
+   "value": 3547.55
   },
   {
    "rank": 18,
    "title": "雨霖铃",
-   "value": 3541.8
+   "value": 3541.83
   },
   {
    "rank": 19,
    "title": "千香",
-   "value": 3540.34
+   "value": 3540.37
   },
   {
    "rank": 20,
    "title": "凡人修仙传",
-   "value": 3539.87
+   "value": 3539.92
   }
  ],
  "topYear": [
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4704.05
+   "value": 4705.97
   },
   {
    "rank": 4,
@@ -188,7 +188,7 @@
   {
    "rank": 15,
    "title": "剥茧",
-   "value": 3032.13
+   "value": 3032.14
   },
   {
    "rank": 16,
@@ -3696,9 +3696,17 @@
    "weekValue": 4437.38,
    "yearRank": 3,
    "yearValue": 4704.05
+  },
+  {
+   "date": "2026-10-28",
+   "hm": "02:00",
+   "weekRank": 1,
+   "weekValue": 4436.14,
+   "yearRank": 3,
+   "yearValue": 4705.97
   }
  ],
- "fetchedAt": "2026-10-27T17:30:42.788Z",
- "lastRun": "2026-10-27T17:30:42.788Z",
+ "fetchedAt": "2026-10-27T18:00:44.694Z",
+ "lastRun": "2026-10-27T18:00:44.694Z",
  "count": 20
 }
