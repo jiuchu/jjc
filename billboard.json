@@ -5,28 +5,28 @@
  "asof": "2026-10-28",
  "latest": {
   "date": "2026-10-28",
-  "hm": "05:00",
-  "iso": "2026-10-28 05:00 +08",
+  "hm": "05:30",
+  "iso": "2026-10-28 05:30 +08",
   "weekRank": 1,
-  "weekValue": 4440.39,
+  "weekValue": 4440.1,
   "yearRank": 3,
-  "yearValue": 4711.22
+  "yearValue": 4711.66
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4440.39
+   "value": 4440.1
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3605.12
+   "value": 3605.11
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3591.5
+   "value": 3591.53
   },
   {
    "rank": 4,
@@ -41,7 +41,7 @@
   {
    "rank": 6,
    "title": "九门",
-   "value": 3580.99
+   "value": 3581.01
   },
   {
    "rank": 7,
@@ -56,7 +56,7 @@
   {
    "rank": 9,
    "title": "月鳞绮纪",
-   "value": 3569.2
+   "value": 3569.21
   },
   {
    "rank": 10,
@@ -76,37 +76,37 @@
   {
    "rank": 13,
    "title": "藏海传",
-   "value": 3566.8
+   "value": 3566.82
   },
   {
    "rank": 14,
    "title": "以法之名",
-   "value": 3556.63
+   "value": 3556.66
   },
   {
    "rank": 15,
    "title": "入青云",
-   "value": 3556.16
+   "value": 3556.17
   },
   {
    "rank": 16,
    "title": "春花焰",
-   "value": 3551.7
+   "value": 3551.72
   },
   {
    "rank": 17,
    "title": "师兄太稳健",
-   "value": 3547.71
+   "value": 3547.72
   },
   {
    "rank": 18,
    "title": "雨霖铃",
-   "value": 3541.99
+   "value": 3542
   },
   {
    "rank": 19,
    "title": "千香",
-   "value": 3540.47
+   "value": 3540.5
   },
   {
    "rank": 20,
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4711.22
+   "value": 4711.66
   },
   {
    "rank": 4,
@@ -203,7 +203,7 @@
   {
    "rank": 18,
    "title": "无可替代",
-   "value": 2951.35
+   "value": 2951.36
   },
   {
    "rank": 19,
@@ -3760,9 +3760,17 @@
    "weekValue": 4440.39,
    "yearRank": 3,
    "yearValue": 4711.22
+  },
+  {
+   "date": "2026-10-28",
+   "hm": "05:30",
+   "weekRank": 1,
+   "weekValue": 4440.1,
+   "yearRank": 3,
+   "yearValue": 4711.66
   }
  ],
- "fetchedAt": "2026-10-27T21:00:42.148Z",
- "lastRun": "2026-10-27T21:00:42.148Z",
+ "fetchedAt": "2026-10-27T21:30:43.125Z",
+ "lastRun": "2026-10-27T21:30:43.125Z",
  "count": 20
 }
