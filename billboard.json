@@ -5,28 +5,28 @@
  "asof": "2026-10-28",
  "latest": {
   "date": "2026-10-28",
-  "hm": "04:01",
-  "iso": "2026-10-28 04:01 +08",
+  "hm": "04:30",
+  "iso": "2026-10-28 04:30 +08",
   "weekRank": 1,
-  "weekValue": 4440.46,
+  "weekValue": 4440.58,
   "yearRank": 3,
-  "yearValue": 4710.12
+  "yearValue": 4710.68
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4440.46
+   "value": 4440.58
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3605.15
+   "value": 3605.14
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3591.44
+   "value": 3591.48
   },
   {
    "rank": 4,
@@ -36,12 +36,12 @@
   {
    "rank": 5,
    "title": "冬城猎凶",
-   "value": 3582.51
+   "value": 3582.5
   },
   {
    "rank": 6,
    "title": "九门",
-   "value": 3580.9
+   "value": 3580.93
   },
   {
    "rank": 7,
@@ -71,12 +71,12 @@
   {
    "rank": 12,
    "title": "悬案",
-   "value": 3567.1
+   "value": 3567.12
   },
   {
    "rank": 13,
    "title": "藏海传",
-   "value": 3566.8
+   "value": 3566.81
   },
   {
    "rank": 14,
@@ -86,12 +86,12 @@
   {
    "rank": 15,
    "title": "入青云",
-   "value": 3556.13
+   "value": 3556.14
   },
   {
    "rank": 16,
    "title": "春花焰",
-   "value": 3551.68
+   "value": 3551.69
   },
   {
    "rank": 17,
@@ -101,12 +101,12 @@
   {
    "rank": 18,
    "title": "雨霖铃",
-   "value": 3541.93
+   "value": 3541.98
   },
   {
    "rank": 19,
    "title": "千香",
-   "value": 3540.44
+   "value": 3540.45
   },
   {
    "rank": 20,
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4710.12
+   "value": 4710.68
   },
   {
    "rank": 4,
@@ -3744,9 +3744,17 @@
    "weekValue": 4440.46,
    "yearRank": 3,
    "yearValue": 4710.12
+  },
+  {
+   "date": "2026-10-28",
+   "hm": "04:30",
+   "weekRank": 1,
+   "weekValue": 4440.58,
+   "yearRank": 3,
+   "yearValue": 4710.68
   }
  ],
- "fetchedAt": "2026-10-27T20:00:42.979Z",
- "lastRun": "2026-10-27T20:01:38.153Z",
+ "fetchedAt": "2026-10-27T20:30:42.623Z",
+ "lastRun": "2026-10-27T20:30:42.623Z",
  "count": 20
 }
