@@ -5,28 +5,28 @@
  "asof": "2026-10-29",
  "latest": {
   "date": "2026-10-29",
-  "hm": "05:30",
-  "iso": "2026-10-29 05:30 +08",
+  "hm": "05:52",
+  "iso": "2026-10-29 05:52 +08",
   "weekRank": 1,
-  "weekValue": 4393.33,
+  "weekValue": 4393.38,
   "yearRank": 3,
-  "yearValue": 4841.97
+  "yearValue": 4842.1
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4393.33
+   "value": 4393.38
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3595.55
+   "value": 3595.59
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3590.69
+   "value": 3590.77
   },
   {
    "rank": 4,
@@ -36,17 +36,17 @@
   {
    "rank": 5,
    "title": "冬城猎凶",
-   "value": 3582.07
+   "value": 3582.08
   },
   {
    "rank": 6,
    "title": "此处通往繁星",
-   "value": 3578
+   "value": 3578.03
   },
   {
    "rank": 7,
    "title": "九门",
-   "value": 3577.63
+   "value": 3577.66
   },
   {
    "rank": 8,
@@ -76,17 +76,17 @@
   {
    "rank": 13,
    "title": "藏海传",
-   "value": 3566.09
+   "value": 3566.1
   },
   {
    "rank": 14,
    "title": "以法之名",
-   "value": 3555.92
+   "value": 3555.95
   },
   {
    "rank": 15,
    "title": "入青云",
-   "value": 3554.69
+   "value": 3554.68
   },
   {
    "rank": 16,
@@ -96,7 +96,7 @@
   {
    "rank": 17,
    "title": "师兄太稳健",
-   "value": 3544.63
+   "value": 3544.71
   },
   {
    "rank": 18,
@@ -106,12 +106,12 @@
   {
    "rank": 19,
    "title": "雨霖铃",
-   "value": 3540.49
+   "value": 3540.51
   },
   {
    "rank": 20,
-   "title": "半熟男女",
-   "value": 3539.47
+   "title": "凡人修仙传",
+   "value": 3539.4
   }
  ],
  "topYear": [
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4841.97
+   "value": 4842.1
   },
   {
    "rank": 4,
@@ -153,7 +153,7 @@
   {
    "rank": 8,
    "title": "雨霖铃",
-   "value": 3410.8
+   "value": 3410.81
   },
   {
    "rank": 9,
@@ -198,12 +198,12 @@
   {
    "rank": 17,
    "title": "千香",
-   "value": 2955.13
+   "value": 2955.14
   },
   {
    "rank": 18,
    "title": "无可替代",
-   "value": 2952.54
+   "value": 2952.55
   },
   {
    "rank": 19,
@@ -4184,9 +4184,17 @@
    "weekValue": 4393.33,
    "yearRank": 3,
    "yearValue": 4841.97
+  },
+  {
+   "date": "2026-10-29",
+   "hm": "05:52",
+   "weekRank": 1,
+   "weekValue": 4393.38,
+   "yearRank": 3,
+   "yearValue": 4842.1
   }
  ],
- "fetchedAt": "2026-10-28T21:30:42.416Z",
- "lastRun": "2026-10-28T21:30:42.416Z",
+ "fetchedAt": "2026-10-28T21:52:59.561Z",
+ "lastRun": "2026-10-28T21:52:59.561Z",
  "count": 20
 }
