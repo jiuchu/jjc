@@ -5,33 +5,33 @@
  "asof": "2026-10-30",
  "latest": {
   "date": "2026-10-30",
-  "hm": "05:00",
-  "iso": "2026-10-30 05:00 +08",
+  "hm": "05:30",
+  "iso": "2026-10-30 05:30 +08",
   "weekRank": 1,
-  "weekValue": 4325.47,
+  "weekValue": 4325.89,
   "yearRank": 3,
-  "yearValue": 4987.53
+  "yearValue": 4987.85
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4325.47
+   "value": 4325.89
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3598.83
+   "value": 3598.77
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3590.07
+   "value": 3590.05
   },
   {
    "rank": 4,
    "title": "冬城猎凶",
-   "value": 3580.9
+   "value": 3580.91
   },
   {
    "rank": 5,
@@ -41,7 +41,7 @@
   {
    "rank": 6,
    "title": "此处通往繁星",
-   "value": 3576.7
+   "value": 3576.67
   },
   {
    "rank": 7,
@@ -56,7 +56,7 @@
   {
    "rank": 9,
    "title": "月鳞绮纪",
-   "value": 3568.36
+   "value": 3568.37
   },
   {
    "rank": 10,
@@ -86,22 +86,22 @@
   {
    "rank": 15,
    "title": "入青云",
-   "value": 3553.47
+   "value": 3553.49
   },
   {
    "rank": 16,
    "title": "春花焰",
-   "value": 3547.38
+   "value": 3547.42
   },
   {
    "rank": 17,
    "title": "师兄太稳健",
-   "value": 3542.5
+   "value": 3542.51
   },
   {
    "rank": 18,
    "title": "唐宫奇案之青雾风鸣",
-   "value": 3540.1
+   "value": 3540.09
   },
   {
    "rank": 19,
@@ -111,7 +111,7 @@
   {
    "rank": 20,
    "title": "凡人修仙传",
-   "value": 3537.98
+   "value": 3538.01
   }
  ],
  "topYear": [
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4987.53
+   "value": 4987.85
   },
   {
    "rank": 4,
@@ -4592,9 +4592,17 @@
    "weekValue": 4325.47,
    "yearRank": 3,
    "yearValue": 4987.53
+  },
+  {
+   "date": "2026-10-30",
+   "hm": "05:30",
+   "weekRank": 1,
+   "weekValue": 4325.89,
+   "yearRank": 3,
+   "yearValue": 4987.85
   }
  ],
- "fetchedAt": "2026-10-29T21:00:43.116Z",
- "lastRun": "2026-10-29T21:00:43.116Z",
+ "fetchedAt": "2026-10-29T21:30:43.378Z",
+ "lastRun": "2026-10-29T21:30:43.378Z",
  "count": 20
 }
