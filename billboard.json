@@ -5,38 +5,38 @@
  "asof": "2026-10-30",
  "latest": {
   "date": "2026-10-30",
-  "hm": "04:30",
-  "iso": "2026-10-30 04:30 +08",
+  "hm": "05:00",
+  "iso": "2026-10-30 05:00 +08",
   "weekRank": 1,
-  "weekValue": 4325.1,
+  "weekValue": 4325.47,
   "yearRank": 3,
-  "yearValue": 4987.14
+  "yearValue": 4987.53
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4325.1
+   "value": 4325.47
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3598.89
+   "value": 3598.83
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3590.08
+   "value": 3590.07
   },
   {
    "rank": 4,
    "title": "冬城猎凶",
-   "value": 3580.88
+   "value": 3580.9
   },
   {
    "rank": 5,
    "title": "一瓯春",
-   "value": 3578.1
+   "value": 3578.11
   },
   {
    "rank": 6,
@@ -46,7 +46,7 @@
   {
    "rank": 7,
    "title": "九门",
-   "value": 3576.6
+   "value": 3576.59
   },
   {
    "rank": 8,
@@ -71,7 +71,7 @@
   {
    "rank": 12,
    "title": "藏海传",
-   "value": 3565.74
+   "value": 3565.75
   },
   {
    "rank": 13,
@@ -86,7 +86,7 @@
   {
    "rank": 15,
    "title": "入青云",
-   "value": 3553.44
+   "value": 3553.47
   },
   {
    "rank": 16,
@@ -96,22 +96,22 @@
   {
    "rank": 17,
    "title": "师兄太稳健",
-   "value": 3542.49
+   "value": 3542.5
   },
   {
    "rank": 18,
    "title": "唐宫奇案之青雾风鸣",
-   "value": 3540.03
+   "value": 3540.1
   },
   {
    "rank": 19,
    "title": "雨霖铃",
-   "value": 3538.55
+   "value": 3538.54
   },
   {
    "rank": 20,
    "title": "凡人修仙传",
-   "value": 3537.88
+   "value": 3537.98
   }
  ],
  "topYear": [
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 4987.14
+   "value": 4987.53
   },
   {
    "rank": 4,
@@ -4584,9 +4584,17 @@
    "weekValue": 4325.1,
    "yearRank": 3,
    "yearValue": 4987.14
+  },
+  {
+   "date": "2026-10-30",
+   "hm": "05:00",
+   "weekRank": 1,
+   "weekValue": 4325.47,
+   "yearRank": 3,
+   "yearValue": 4987.53
   }
  ],
- "fetchedAt": "2026-10-29T20:30:29.251Z",
- "lastRun": "2026-10-29T20:30:29.251Z",
+ "fetchedAt": "2026-10-29T21:00:43.116Z",
+ "lastRun": "2026-10-29T21:00:43.116Z",
  "count": 20
 }
