@@ -5,38 +5,38 @@
  "asof": "2026-11-01",
  "latest": {
   "date": "2026-11-01",
-  "hm": "06:30",
-  "iso": "2026-11-01 06:30 +08",
+  "hm": "06:46",
+  "iso": "2026-11-01 06:46 +08",
   "weekRank": 1,
-  "weekValue": 4283.27,
+  "weekValue": 4283.02,
   "yearRank": 3,
-  "yearValue": 5047.04
+  "yearValue": 5047.09
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4283.27
+   "value": 4283.02
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3595.72
+   "value": 3595.78
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3588.41
+   "value": 3588.39
   },
   {
    "rank": 4,
    "title": "此处通往繁星",
-   "value": 3580.6
+   "value": 3580.61
   },
   {
    "rank": 5,
    "title": "冬城猎凶",
-   "value": 3577.47
+   "value": 3577.48
   },
   {
    "rank": 6,
@@ -56,7 +56,7 @@
   {
    "rank": 9,
    "title": "月鳞绮纪",
-   "value": 3568
+   "value": 3568.01
   },
   {
    "rank": 10,
@@ -76,17 +76,17 @@
   {
    "rank": 13,
    "title": "入青云",
-   "value": 3556.74
+   "value": 3556.78
   },
   {
    "rank": 14,
    "title": "当我飞奔向你",
-   "value": 3550
+   "value": 3550.01
   },
   {
    "rank": 15,
    "title": "春花焰",
-   "value": 3546.96
+   "value": 3546.95
   },
   {
    "rank": 16,
@@ -96,12 +96,12 @@
   {
    "rank": 17,
    "title": "唐宫奇案之青雾风鸣",
-   "value": 3541.18
+   "value": 3541.21
   },
   {
    "rank": 18,
    "title": "凡人修仙传",
-   "value": 3541
+   "value": 3541.07
   },
   {
    "rank": 19,
@@ -111,7 +111,7 @@
   {
    "rank": 20,
    "title": "雨霖铃",
-   "value": 3537.46
+   "value": 3537.5
   }
  ],
  "topYear": [
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 5047.04
+   "value": 5047.09
   },
   {
    "rank": 4,
@@ -153,7 +153,7 @@
   {
    "rank": 8,
    "title": "雨霖铃",
-   "value": 3412.45
+   "value": 3412.46
   },
   {
    "rank": 9,
@@ -198,7 +198,7 @@
   {
    "rank": 17,
    "title": "无可替代",
-   "value": 2963.99
+   "value": 2964
   },
   {
    "rank": 18,
@@ -5464,9 +5464,17 @@
    "weekValue": 4283.27,
    "yearRank": 3,
    "yearValue": 5047.04
+  },
+  {
+   "date": "2026-11-01",
+   "hm": "06:46",
+   "weekRank": 1,
+   "weekValue": 4283.02,
+   "yearRank": 3,
+   "yearValue": 5047.09
   }
  ],
- "fetchedAt": "2026-10-31T22:30:44.515Z",
- "lastRun": "2026-10-31T22:30:44.515Z",
+ "fetchedAt": "2026-10-31T22:46:34.599Z",
+ "lastRun": "2026-10-31T22:46:34.599Z",
  "count": 20
 }
