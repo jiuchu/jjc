@@ -5,33 +5,33 @@
  "asof": "2026-11-02",
  "latest": {
   "date": "2026-11-02",
-  "hm": "04:30",
-  "iso": "2026-11-02 04:30 +08",
+  "hm": "04:47",
+  "iso": "2026-11-02 04:47 +08",
   "weekRank": 1,
-  "weekValue": 4305.6,
+  "weekValue": 4305.88,
   "yearRank": 3,
-  "yearValue": 5076.37
+  "yearValue": 5076.39
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4305.6
+   "value": 4305.88
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3601.06
+   "value": 3601.07
   },
   {
    "rank": 3,
    "title": "无可替代",
-   "value": 3588.34
+   "value": 3588.35
   },
   {
    "rank": 4,
    "title": "九门",
-   "value": 3582.76
+   "value": 3582.8
   },
   {
    "rank": 5,
@@ -46,12 +46,12 @@
   {
    "rank": 7,
    "title": "一瓯春",
-   "value": 3575.63
+   "value": 3575.62
   },
   {
    "rank": 8,
    "title": "鉴定",
-   "value": 3570.79
+   "value": 3570.8
   },
   {
    "rank": 9,
@@ -71,12 +71,12 @@
   {
    "rank": 12,
    "title": "难哄",
-   "value": 3567.16
+   "value": 3567.17
   },
   {
    "rank": 13,
    "title": "藏海传",
-   "value": 3567.15
+   "value": 3567.16
   },
   {
    "rank": 14,
@@ -86,7 +86,7 @@
   {
    "rank": 15,
    "title": "当我飞奔向你",
-   "value": 3556.82
+   "value": 3556.83
   },
   {
    "rank": 16,
@@ -101,7 +101,7 @@
   {
    "rank": 18,
    "title": "以法之名",
-   "value": 3546.54
+   "value": 3546.55
   },
   {
    "rank": 19,
@@ -111,14 +111,14 @@
   {
    "rank": 20,
    "title": "千香",
-   "value": 3544.17
+   "value": 3544.18
   }
  ],
  "topYear": [
   {
    "rank": 1,
    "title": "九门",
-   "value": 5162.43
+   "value": 5162.45
   },
   {
    "rank": 2,
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 5076.37
+   "value": 5076.39
   },
   {
    "rank": 4,
@@ -5848,9 +5848,17 @@
    "weekValue": 4305.6,
    "yearRank": 3,
    "yearValue": 5076.37
+  },
+  {
+   "date": "2026-11-02",
+   "hm": "04:47",
+   "weekRank": 1,
+   "weekValue": 4305.88,
+   "yearRank": 3,
+   "yearValue": 5076.39
   }
  ],
- "fetchedAt": "2026-11-01T20:30:40.684Z",
- "lastRun": "2026-11-01T20:30:40.684Z",
+ "fetchedAt": "2026-11-01T20:47:01.941Z",
+ "lastRun": "2026-11-01T20:47:01.941Z",
  "count": 20
 }
