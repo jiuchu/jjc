@@ -5,23 +5,23 @@
  "asof": "2026-11-03",
  "latest": {
   "date": "2026-11-03",
-  "hm": "05:30",
-  "iso": "2026-11-03 05:30 +08",
+  "hm": "06:00",
+  "iso": "2026-11-03 06:00 +08",
   "weekRank": 1,
-  "weekValue": 4318.95,
+  "weekValue": 4319.16,
   "yearRank": 3,
-  "yearValue": 5103.5
+  "yearValue": 5103.54
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4318.95
+   "value": 4319.16
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3600.66
+   "value": 3600.6
   },
   {
    "rank": 3,
@@ -31,7 +31,7 @@
   {
    "rank": 4,
    "title": "九门",
-   "value": 3584.12
+   "value": 3584.11
   },
   {
    "rank": 5,
@@ -41,17 +41,17 @@
   {
    "rank": 6,
    "title": "冬城猎凶",
-   "value": 3580.34
+   "value": 3580.35
   },
   {
    "rank": 7,
    "title": "此处通往繁星",
-   "value": 3577.34
+   "value": 3577.35
   },
   {
    "rank": 8,
    "title": "一瓯春",
-   "value": 3576.69
+   "value": 3576.68
   },
   {
    "rank": 9,
@@ -61,7 +61,7 @@
   {
    "rank": 10,
    "title": "悬案",
-   "value": 3569.28
+   "value": 3569.29
   },
   {
    "rank": 11,
@@ -76,7 +76,7 @@
   {
    "rank": 13,
    "title": "难哄",
-   "value": 3567.77
+   "value": 3567.79
   },
   {
    "rank": 14,
@@ -91,27 +91,27 @@
   {
    "rank": 16,
    "title": "春花焰",
-   "value": 3550.39
+   "value": 3550.42
   },
   {
    "rank": 17,
    "title": "凡人修仙传",
-   "value": 3549.73
+   "value": 3549.74
   },
   {
    "rank": 18,
    "title": "唐宫奇案之青雾风鸣",
-   "value": 3549.19
+   "value": 3549.23
   },
   {
    "rank": 19,
    "title": "千香",
-   "value": 3548.26
+   "value": 3548.27
   },
   {
    "rank": 20,
    "title": "以法之名",
-   "value": 3545.91
+   "value": 3545.94
   }
  ],
  "topYear": [
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 5103.5
+   "value": 5103.54
   },
   {
    "rank": 4,
@@ -6280,9 +6280,17 @@
    "weekValue": 4318.95,
    "yearRank": 3,
    "yearValue": 5103.5
+  },
+  {
+   "date": "2026-11-03",
+   "hm": "06:00",
+   "weekRank": 1,
+   "weekValue": 4319.16,
+   "yearRank": 3,
+   "yearValue": 5103.54
   }
  ],
- "fetchedAt": "2026-11-02T21:30:32.389Z",
- "lastRun": "2026-11-02T21:30:32.389Z",
+ "fetchedAt": "2026-11-02T22:00:27.936Z",
+ "lastRun": "2026-11-02T22:00:27.936Z",
  "count": 20
 }
