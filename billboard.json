@@ -5,23 +5,23 @@
  "asof": "2026-11-04",
  "latest": {
   "date": "2026-11-04",
-  "hm": "05:00",
-  "iso": "2026-11-04 05:00 +08",
+  "hm": "05:30",
+  "iso": "2026-11-04 05:30 +08",
   "weekRank": 1,
-  "weekValue": 4324.87,
+  "weekValue": 4324.97,
   "yearRank": 3,
-  "yearValue": 5128.97
+  "yearValue": 5129.02
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4324.87
+   "value": 4324.97
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3599.8
+   "value": 3599.74
   },
   {
    "rank": 3,
@@ -31,22 +31,22 @@
   {
    "rank": 4,
    "title": "冬城猎凶",
-   "value": 3581.24
+   "value": 3581.25
   },
   {
    "rank": 5,
    "title": "九门",
-   "value": 3580.38
+   "value": 3580.34
   },
   {
    "rank": 6,
    "title": "无可替代",
-   "value": 3580.22
+   "value": 3580.23
   },
   {
    "rank": 7,
    "title": "一瓯春",
-   "value": 3578.46
+   "value": 3578.45
   },
   {
    "rank": 8,
@@ -71,22 +71,22 @@
   {
    "rank": 12,
    "title": "藏海传",
-   "value": 3568.3
+   "value": 3568.31
   },
   {
    "rank": 13,
    "title": "难哄",
-   "value": 3568.16
+   "value": 3568.17
   },
   {
    "rank": 14,
    "title": "谷雨",
-   "value": 3564.49
+   "value": 3564.54
   },
   {
    "rank": 15,
    "title": "入青云",
-   "value": 3561.91
+   "value": 3561.95
   },
   {
    "rank": 16,
@@ -96,7 +96,7 @@
   {
    "rank": 17,
    "title": "凡人修仙传",
-   "value": 3552.84
+   "value": 3552.85
   },
   {
    "rank": 18,
@@ -111,14 +111,14 @@
   {
    "rank": 20,
    "title": "唐宫奇案之青雾风鸣",
-   "value": 3549.27
+   "value": 3549.28
   }
  ],
  "topYear": [
   {
    "rank": 1,
    "title": "九门",
-   "value": 5163.18
+   "value": 5163.2
   },
   {
    "rank": 2,
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 5128.97
+   "value": 5129.02
   },
   {
    "rank": 4,
@@ -6688,9 +6688,17 @@
    "weekValue": 4324.87,
    "yearRank": 3,
    "yearValue": 5128.97
+  },
+  {
+   "date": "2026-11-04",
+   "hm": "05:30",
+   "weekRank": 1,
+   "weekValue": 4324.97,
+   "yearRank": 3,
+   "yearValue": 5129.02
   }
  ],
- "fetchedAt": "2026-11-03T20:54:50.317Z",
- "lastRun": "2026-11-03T21:00:33.654Z",
+ "fetchedAt": "2026-11-03T21:30:38.836Z",
+ "lastRun": "2026-11-03T21:30:38.836Z",
  "count": 20
 }
