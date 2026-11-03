@@ -5,23 +5,23 @@
  "asof": "2026-11-04",
  "latest": {
   "date": "2026-11-04",
-  "hm": "03:30",
-  "iso": "2026-11-04 03:30 +08",
+  "hm": "04:00",
+  "iso": "2026-11-04 04:00 +08",
   "weekRank": 1,
-  "weekValue": 4325.41,
+  "weekValue": 4325.06,
   "yearRank": 3,
-  "yearValue": 5128.81
+  "yearValue": 5128.87
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4325.41
+   "value": 4325.06
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3599.93
+   "value": 3599.87
   },
   {
    "rank": 3,
@@ -31,22 +31,22 @@
   {
    "rank": 4,
    "title": "冬城猎凶",
-   "value": 3581.21
+   "value": 3581.23
   },
   {
    "rank": 5,
    "title": "九门",
-   "value": 3580.45
+   "value": 3580.43
   },
   {
    "rank": 6,
    "title": "无可替代",
-   "value": 3580.18
+   "value": 3580.19
   },
   {
    "rank": 7,
    "title": "一瓯春",
-   "value": 3578.48
+   "value": 3578.47
   },
   {
    "rank": 8,
@@ -61,12 +61,12 @@
   {
    "rank": 10,
    "title": "悬案",
-   "value": 3569.35
+   "value": 3569.36
   },
   {
    "rank": 11,
    "title": "月鳞绮纪",
-   "value": 3568.98
+   "value": 3568.99
   },
   {
    "rank": 12,
@@ -86,12 +86,12 @@
   {
    "rank": 15,
    "title": "入青云",
-   "value": 3561.86
+   "value": 3561.88
   },
   {
    "rank": 16,
    "title": "当我飞奔向你",
-   "value": 3560.5
+   "value": 3560.52
   },
   {
    "rank": 17,
@@ -101,12 +101,12 @@
   {
    "rank": 18,
    "title": "春花焰",
-   "value": 3550.91
+   "value": 3550.93
   },
   {
    "rank": 19,
    "title": "千香",
-   "value": 3550.3
+   "value": 3550.42
   },
   {
    "rank": 20,
@@ -128,7 +128,7 @@
   {
    "rank": 3,
    "title": "嫁金钗",
-   "value": 5128.81
+   "value": 5128.87
   },
   {
    "rank": 4,
@@ -6656,9 +6656,17 @@
    "weekValue": 4325.41,
    "yearRank": 3,
    "yearValue": 5128.81
+  },
+  {
+   "date": "2026-11-04",
+   "hm": "04:00",
+   "weekRank": 1,
+   "weekValue": 4325.06,
+   "yearRank": 3,
+   "yearValue": 5128.87
   }
  ],
- "fetchedAt": "2026-11-03T19:30:44.580Z",
- "lastRun": "2026-11-03T19:30:44.580Z",
+ "fetchedAt": "2026-11-03T20:00:41.379Z",
+ "lastRun": "2026-11-03T20:00:41.379Z",
  "count": 20
 }
