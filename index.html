@@ -1151,7 +1151,8 @@ function renderMeta() {
      10-17 起才改到中午 12:00。两张 chip 分开写，读者才知道哪个是历史、哪个是现在的节奏。 */
   const f = ykFirstAt(), p = ykPlayAt();
   if (m.openDay) chips.push(`首播 <b>${m.openDay}${f ? ' ' + f.text : ''}</b> 上线`);
-  if (p) chips.push(`优酷 <b>每日 ${p.text}</b> 更新`);
+  /* 收官之后这一句就成了假的 —— 它说的是「以后每天还更」，而灯塔自己已经改口写「已完结」。 */
+  if (p && !ykEnded()) chips.push(`优酷 <b>每日 ${p.text}</b> 更新`);
   chips.push('CCTV-8 <b>10.16</b> 21:29 首播');
   if (m.duration) chips.push(`单集 <b>${m.duration}</b> 分钟`);
   document.getElementById('chips').innerHTML = chips.map(c => `<span class="chip">${c}</span>`).join('');
@@ -1282,19 +1283,26 @@ function ykCalendar(hh, mm, fhh, fmm) {
   return out;
 }
 
+/* 灯塔在收官那一拍把 updateEpisode 从「更新至 N/M 集」换成「已完结」，带数字的两种形状都不认了
+   （11-03 实测嫁金钗：updateEpisode=已完结、episodeCnt=30，同一发 playrule 也从长句缩成「30集全」）。
+   两处要认，抽一个。 */
+function ykEnded() { return String((S.meta || {}).updateEpisode || '').trim() === '已完结'; }
+
 function ykState(now) {
   const m = S.meta || {};
   const upd = String(m.updateEpisode || '');
   const a = upd.match(/更新至\s*(\d+)\s*\/\s*(\d+)\s*集/) || upd.match(/更新至\s*(\d+)\s*集/);
+  const ended = ykEnded();
   const p = ykPlayAt(), f = ykFirstAt();
   const cal = ykCalendar(p ? p.hh : NaN, p ? p.mm : 0, f ? f.hh : NaN, f ? f.mm : 0);
   const done = cal.filter(x => x.at <= now);
   let total = m.episodeCnt || 30;
   if (a && a[2]) total = +a[2];
-  let n = a ? +a[1] : null;
+  let n = a ? +a[1] : (ended ? total : null);
   if (n == null && done.length) n = done[done.length - 1].cum;
-  return { n, total, at: p ? p.text : null,
-           next: cal.find(x => x.at > now) || null,
+  return { n, total, ended, at: p ? p.text : null,
+           /* 收官之后日历里那些「以后还更」的格子不再作数，倒计时不许再往它们身上指。 */
+           next: ended ? null : (cal.find(x => x.at > now) || null),
            last: done.length ? done[done.length - 1] : null };
 }
 
@@ -1974,8 +1982,10 @@ function tickCountdown() {
      （首更3集 / 10月17日至10月21日每天更新2集 / SVIP提前多看1集），所以倒数到的是
      12:00 那一批（2 集），文案写「距优酷更新」不写「距下一集」，别让人以为只等一集。 */
   const el = document.getElementById('marchText');
+  /* 「更新排期待公布」说的是日历算到头了、剧却还没放完；灯塔已经改口「已完结」的时候不能再印这句 ——
+     那一档没有排期可等。 */
   if (el && yk.n) el.textContent = `优酷已更 ${yk.n}/${yk.total} 集` +
-    (yk.next ? ' · 距优酷更新 ' + dur(yk.next.at - now) : ' · 更新排期待公布');
+    (yk.next ? ' · 距优酷更新 ' + dur(yk.next.at - now) : (yk.ended ? '' : ' · 更新排期待公布'));
   const cd = document.getElementById('countdown');
   /* 两集连播，标签必须带上集数：21:29 第1集开播后，下一个正片档是 22:21 的第2集，
      这时候光写「距 CCTV 播出」看着像第1集还没播。提要不参与倒数（epItem 里 n=0 已被滤掉）。 */
