@@ -5,23 +5,23 @@
  "asof": "2026-11-05",
  "latest": {
   "date": "2026-11-05",
-  "hm": "14:30",
-  "iso": "2026-11-05 14:30 +08",
+  "hm": "15:00",
+  "iso": "2026-11-05 15:00 +08",
   "weekRank": 1,
-  "weekValue": 4334.47,
+  "weekValue": 4338.2,
   "yearRank": 2,
-  "yearValue": 5151.01
+  "yearValue": 5151.2
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4334.47
+   "value": 4338.2
   },
   {
    "rank": 2,
    "title": "早春晴朗",
-   "value": 3599.25
+   "value": 3600.34
   },
   {
    "rank": 3,
@@ -31,27 +31,27 @@
   {
    "rank": 4,
    "title": "冬城猎凶",
-   "value": 3582.54
+   "value": 3582.5
   },
   {
    "rank": 5,
    "title": "无可替代",
-   "value": 3580.15
+   "value": 3580.36
   },
   {
    "rank": 6,
    "title": "九门",
-   "value": 3579.24
+   "value": 3579.59
   },
   {
    "rank": 7,
    "title": "一瓯春",
-   "value": 3578.1
+   "value": 3577.98
   },
   {
    "rank": 8,
    "title": "谷雨",
-   "value": 3576.66
+   "value": 3577.24
   },
   {
    "rank": 9,
@@ -61,57 +61,57 @@
   {
    "rank": 10,
    "title": "翘楚",
-   "value": 3570.39
+   "value": 3570.43
   },
   {
    "rank": 11,
    "title": "悬案",
-   "value": 3569.87
+   "value": 3569.9
   },
   {
    "rank": 12,
    "title": "藏海传",
-   "value": 3569.28
+   "value": 3569.32
   },
   {
    "rank": 13,
    "title": "月鳞绮纪",
-   "value": 3569.25
+   "value": 3569.28
   },
   {
    "rank": 14,
    "title": "难哄",
-   "value": 3569.16
+   "value": 3569.19
   },
   {
    "rank": 15,
    "title": "入青云",
-   "value": 3563.28
+   "value": 3563.38
   },
   {
    "rank": 16,
    "title": "当我飞奔向你",
-   "value": 3562.31
+   "value": 3562.39
   },
   {
    "rank": 17,
    "title": "凡人修仙传",
-   "value": 3557.67
+   "value": 3557.76
   },
   {
    "rank": 18,
    "title": "唐宫奇案之青雾风鸣",
-   "value": 3554.14
+   "value": 3554.42
   },
   {
    "rank": 19,
    "title": "春花焰",
-   "value": 3553.82
+   "value": 3554.01
   },
   {
    "rank": 20,
    "title": "千香",
-   "value": 3553.44
+   "value": 3553.65
   }
  ],
  "topYear": [
@@ -123,12 +123,12 @@
   {
    "rank": 2,
    "title": "嫁金钗",
-   "value": 5151.01
+   "value": 5151.2
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 5136.84
+   "value": 5136.87
   },
   {
    "rank": 4,
@@ -138,27 +138,27 @@
   {
    "rank": 5,
    "title": "长安二十四计",
-   "value": 4136.58
+   "value": 4136.59
   },
   {
    "rank": 6,
    "title": "月鳞绮纪",
-   "value": 4101.39
+   "value": 4101.41
   },
   {
    "rank": 7,
    "title": "翘楚",
-   "value": 3654.27
+   "value": 3654.28
   },
   {
    "rank": 8,
    "title": "雨霖铃",
-   "value": 3415.04
+   "value": 3415.05
   },
   {
    "rank": 9,
    "title": "乡村爱情18",
-   "value": 3231.06
+   "value": 3231.07
   },
   {
    "rank": 10,
@@ -178,17 +178,17 @@
   {
    "rank": 13,
    "title": "剥茧",
-   "value": 3034.18
+   "value": 3034.19
   },
   {
    "rank": 14,
    "title": "暗河传",
-   "value": 2993.84
+   "value": 2993.85
   },
   {
    "rank": 15,
    "title": "入青云",
-   "value": 2987.99
+   "value": 2988
   },
   {
    "rank": 16,
@@ -198,17 +198,17 @@
   {
    "rank": 17,
    "title": "无可替代",
-   "value": 2980.9
+   "value": 2980.93
   },
   {
    "rank": 18,
    "title": "千香",
-   "value": 2958.01
+   "value": 2958.02
   },
   {
    "rank": 19,
    "title": "我的山与海",
-   "value": 2937.91
+   "value": 2937.92
   },
   {
    "rank": 20,
@@ -7256,9 +7256,17 @@
    "weekValue": 4334.47,
    "yearRank": 2,
    "yearValue": 5151.01
+  },
+  {
+   "date": "2026-11-05",
+   "hm": "15:00",
+   "weekRank": 1,
+   "weekValue": 4338.2,
+   "yearRank": 2,
+   "yearValue": 5151.2
   }
  ],
- "fetchedAt": "2026-11-05T06:30:26.510Z",
- "lastRun": "2026-11-05T06:30:26.510Z",
+ "fetchedAt": "2026-11-05T07:00:26.745Z",
+ "lastRun": "2026-11-05T07:00:26.745Z",
  "count": 20
 }
