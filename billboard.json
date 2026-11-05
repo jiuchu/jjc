@@ -5,10 +5,10 @@
  "asof": "2026-11-06",
  "latest": {
   "date": "2026-11-06",
-  "hm": "03:00",
-  "iso": "2026-11-06 03:00 +08",
+  "hm": "03:30",
+  "iso": "2026-11-06 03:30 +08",
   "weekRank": 1,
-  "weekValue": 4283.92,
+  "weekValue": 4284.39,
   "yearRank": 2,
   "yearValue": 5153.77
  },
@@ -16,7 +16,7 @@
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4283.92
+   "value": 4284.39
   },
   {
    "rank": 2,
@@ -26,7 +26,7 @@
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 3600.91
+   "value": 3600.87
   },
   {
    "rank": 4,
@@ -36,12 +36,12 @@
   {
    "rank": 5,
    "title": "无可替代",
-   "value": 3586.54
+   "value": 3586.55
   },
   {
    "rank": 6,
    "title": "冬城猎凶",
-   "value": 3581.46
+   "value": 3581.49
   },
   {
    "rank": 7,
@@ -51,17 +51,17 @@
   {
    "rank": 8,
    "title": "九门",
-   "value": 3578.36
+   "value": 3578.34
   },
   {
    "rank": 9,
    "title": "此处通往繁星",
-   "value": 3578.02
+   "value": 3578
   },
   {
    "rank": 10,
    "title": "翘楚",
-   "value": 3569.98
+   "value": 3569.99
   },
   {
    "rank": 11,
@@ -76,12 +76,12 @@
   {
    "rank": 13,
    "title": "难哄",
-   "value": 3568.79
+   "value": 3568.8
   },
   {
    "rank": 14,
    "title": "月鳞绮纪",
-   "value": 3568.68
+   "value": 3568.69
   },
   {
    "rank": 15,
@@ -91,27 +91,27 @@
   {
    "rank": 16,
    "title": "入青云",
-   "value": 3559.8
+   "value": 3559.81
   },
   {
    "rank": 17,
    "title": "凡人修仙传",
-   "value": 3556.9
+   "value": 3556.91
   },
   {
    "rank": 18,
    "title": "唐宫奇案之青雾风鸣",
-   "value": 3551.93
+   "value": 3552
   },
   {
    "rank": 19,
    "title": "乡村爱情18",
-   "value": 3551.44
+   "value": 3551.45
   },
   {
    "rank": 20,
    "title": "千香",
-   "value": 3551
+   "value": 3551.02
   }
  ],
  "topYear": [
@@ -7472,9 +7472,17 @@
    "weekValue": 4283.92,
    "yearRank": 2,
    "yearValue": 5153.77
+  },
+  {
+   "date": "2026-11-06",
+   "hm": "03:30",
+   "weekRank": 1,
+   "weekValue": 4284.39,
+   "yearRank": 2,
+   "yearValue": 5153.77
   }
  ],
- "fetchedAt": "2026-11-05T19:00:28.055Z",
- "lastRun": "2026-11-05T19:00:28.055Z",
+ "fetchedAt": "2026-11-05T19:30:30.265Z",
+ "lastRun": "2026-11-05T19:30:30.265Z",
  "count": 20
 }
