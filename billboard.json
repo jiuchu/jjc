@@ -5,28 +5,28 @@
  "asof": "2026-11-07",
  "latest": {
   "date": "2026-11-07",
-  "hm": "00:30",
-  "iso": "2026-11-07 00:30 +08",
+  "hm": "01:00",
+  "iso": "2026-11-07 01:00 +08",
   "weekRank": 1,
-  "weekValue": 4324.93,
+  "weekValue": 4231.09,
   "yearRank": 2,
-  "yearValue": 5157.71
+  "yearValue": 5157.76
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4324.93
+   "value": 4231.09
   },
   {
    "rank": 2,
    "title": "谷雨",
-   "value": 3765.45
+   "value": 3776.16
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 3598.65
+   "value": 3593.62
   },
   {
    "rank": 4,
@@ -36,82 +36,82 @@
   {
    "rank": 5,
    "title": "九门",
-   "value": 3586.08
+   "value": 3583.15
   },
   {
    "rank": 6,
-   "title": "无可替代",
-   "value": 3581.1
+   "title": "此处通往繁星",
+   "value": 3580.13
   },
   {
    "rank": 7,
-   "title": "冬城猎凶",
-   "value": 3579.59
+   "title": "一瓯春",
+   "value": 3579.25
   },
   {
    "rank": 8,
-   "title": "一瓯春",
-   "value": 3576.96
+   "title": "无可替代",
+   "value": 3577.78
   },
   {
    "rank": 9,
-   "title": "此处通往繁星",
-   "value": 3574.65
+   "title": "冬城猎凶",
+   "value": 3577.6
   },
   {
    "rank": 10,
    "title": "翘楚",
-   "value": 3571.92
+   "value": 3569.78
   },
   {
    "rank": 11,
    "title": "悬案",
-   "value": 3570.98
+   "value": 3568.92
   },
   {
    "rank": 12,
    "title": "难哄",
-   "value": 3570.18
+   "value": 3568.73
   },
   {
    "rank": 13,
    "title": "藏海传",
-   "value": 3570.16
+   "value": 3568.49
   },
   {
    "rank": 14,
    "title": "月鳞绮纪",
-   "value": 3569.97
+   "value": 3568.02
   },
   {
    "rank": 15,
    "title": "当我飞奔向你",
-   "value": 3564.52
+   "value": 3557.88
   },
   {
    "rank": 16,
-   "title": "入青云",
-   "value": 3563.83
+   "title": "凡人修仙传",
+   "value": 3556.44
   },
   {
    "rank": 17,
-   "title": "凡人修仙传",
-   "value": 3562.18
+   "title": "入青云",
+   "value": 3554.76
   },
   {
    "rank": 18,
-   "title": "唐宫奇案之青雾风鸣",
-   "value": 3558.96
+   "title": "金关",
+   "value": 3553.33
   },
   {
    "rank": 19,
-   "title": "乡村爱情18",
-   "value": 3558.13
+   "title": "唐宫奇案之青雾风鸣",
+   "value": 3551.11
   },
   {
    "rank": 20,
-   "title": "千香",
-   "value": 3557.34
+   "title": "乡村爱情18",
+   "value": 3550.15
   }
  ],
  "topYear": [
@@ -123,12 +123,12 @@
   {
    "rank": 2,
    "title": "嫁金钗",
-   "value": 5157.71
+   "value": 5157.76
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 5139.75
+   "value": 5139.88
   },
   {
    "rank": 4,
@@ -143,42 +143,42 @@
   {
    "rank": 6,
    "title": "月鳞绮纪",
-   "value": 4102.07
+   "value": 4102.09
   },
   {
    "rank": 7,
    "title": "翘楚",
-   "value": 3654.62
+   "value": 3654.64
   },
   {
    "rank": 8,
    "title": "雨霖铃",
-   "value": 3415.79
+   "value": 3415.81
   },
   {
    "rank": 9,
    "title": "乡村爱情18",
-   "value": 3231.27
+   "value": 3231.29
   },
   {
    "rank": 10,
    "title": "新闻女王2",
-   "value": 3143.23
+   "value": 3106.31
   },
   {
    "rank": 11,
    "title": "黑夜告白",
-   "value": 3078.34
+   "value": 3078.35
   },
   {
    "rank": 12,
    "title": "悬案",
-   "value": 3046.94
+   "value": 3046.95
   },
   {
    "rank": 13,
    "title": "剥茧",
-   "value": 3034.6
+   "value": 3034.61
   },
   {
    "rank": 14,
@@ -188,32 +188,32 @@
   {
    "rank": 15,
    "title": "无可替代",
-   "value": 2982.1
+   "value": 2982.13
   },
   {
    "rank": 16,
-   "title": "入青云",
-   "value": 2979.97
+   "title": "千香",
+   "value": 2958.63
   },
   {
    "rank": 17,
-   "title": "暗河传",
-   "value": 2959.65
+   "title": "入青云",
+   "value": 2958.58
   },
   {
    "rank": 18,
-   "title": "千香",
-   "value": 2958.62
+   "title": "我的山与海",
+   "value": 2938.39
   },
   {
    "rank": 19,
-   "title": "我的山与海",
-   "value": 2938.36
+   "title": "暗河传",
+   "value": 2921.66
   },
   {
    "rank": 20,
    "title": "正义女神",
-   "value": 2895.78
+   "value": 2895.79
   }
  ],
  "samples": [
@@ -7840,9 +7840,17 @@
    "weekValue": 4324.93,
    "yearRank": 2,
    "yearValue": 5157.71
+  },
+  {
+   "date": "2026-11-07",
+   "hm": "01:00",
+   "weekRank": 1,
+   "weekValue": 4231.09,
+   "yearRank": 2,
+   "yearValue": 5157.76
   }
  ],
- "fetchedAt": "2026-11-06T16:30:26.302Z",
- "lastRun": "2026-11-06T16:30:26.302Z",
+ "fetchedAt": "2026-11-06T17:00:25.963Z",
+ "lastRun": "2026-11-06T17:00:25.963Z",
  "count": 20
 }
