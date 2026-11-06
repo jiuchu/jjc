@@ -5,28 +5,28 @@
  "asof": "2026-11-06",
  "latest": {
   "date": "2026-11-06",
-  "hm": "22:33",
-  "iso": "2026-11-06 22:33 +08",
+  "hm": "23:00",
+  "iso": "2026-11-06 23:00 +08",
   "weekRank": 1,
-  "weekValue": 4320.89,
+  "weekValue": 4324.01,
   "yearRank": 2,
-  "yearValue": 5157.1
+  "yearValue": 5157.39
  },
  "top": [
   {
    "rank": 1,
    "title": "嫁金钗",
-   "value": 4320.89
+   "value": 4324.01
   },
   {
    "rank": 2,
    "title": "谷雨",
-   "value": 3743.16
+   "value": 3750.41
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 3600.56
+   "value": 3599.38
   },
   {
    "rank": 4,
@@ -36,82 +36,82 @@
   {
    "rank": 5,
    "title": "九门",
-   "value": 3586.57
+   "value": 3586.49
   },
   {
    "rank": 6,
-   "title": "冬城猎凶",
-   "value": 3580.6
+   "title": "无可替代",
+   "value": 3580.34
   },
   {
    "rank": 7,
-   "title": "无可替代",
-   "value": 3580.05
+   "title": "冬城猎凶",
+   "value": 3580.3
   },
   {
    "rank": 8,
    "title": "一瓯春",
-   "value": 3577.51
+   "value": 3577.23
   },
   {
    "rank": 9,
    "title": "此处通往繁星",
-   "value": 3574.86
+   "value": 3574.8
   },
   {
    "rank": 10,
    "title": "翘楚",
-   "value": 3571.66
+   "value": 3571.75
   },
   {
    "rank": 11,
    "title": "悬案",
-   "value": 3570.81
+   "value": 3570.85
   },
   {
    "rank": 12,
-   "title": "藏海传",
-   "value": 3570.03
+   "title": "难哄",
+   "value": 3570.07
   },
   {
    "rank": 13,
-   "title": "难哄",
-   "value": 3570.01
+   "title": "藏海传",
+   "value": 3570.06
   },
   {
    "rank": 14,
    "title": "月鳞绮纪",
-   "value": 3569.87
+   "value": 3569.9
   },
   {
    "rank": 15,
    "title": "当我飞奔向你",
-   "value": 3564.07
+   "value": 3564.25
   },
   {
    "rank": 16,
    "title": "入青云",
-   "value": 3563.36
+   "value": 3563.54
   },
   {
    "rank": 17,
    "title": "凡人修仙传",
-   "value": 3561.7
+   "value": 3561.92
   },
   {
    "rank": 18,
    "title": "唐宫奇案之青雾风鸣",
-   "value": 3558.31
+   "value": 3558.57
   },
   {
    "rank": 19,
    "title": "乡村爱情18",
-   "value": 3557.63
+   "value": 3557.77
   },
   {
    "rank": 20,
    "title": "千香",
-   "value": 3556.73
+   "value": 3556.96
   }
  ],
  "topYear": [
@@ -123,12 +123,12 @@
   {
    "rank": 2,
    "title": "嫁金钗",
-   "value": 5157.1
+   "value": 5157.39
   },
   {
    "rank": 3,
    "title": "早春晴朗",
-   "value": 5139.47
+   "value": 5139.57
   },
   {
    "rank": 4,
@@ -138,27 +138,27 @@
   {
    "rank": 5,
    "title": "长安二十四计",
-   "value": 4136.77
+   "value": 4136.78
   },
   {
    "rank": 6,
    "title": "月鳞绮纪",
-   "value": 4102.04
+   "value": 4102.05
   },
   {
    "rank": 7,
    "title": "翘楚",
-   "value": 3654.6
+   "value": 3654.61
   },
   {
    "rank": 8,
    "title": "雨霖铃",
-   "value": 3415.76
+   "value": 3415.77
   },
   {
    "rank": 9,
    "title": "乡村爱情18",
-   "value": 3231.26
+   "value": 3231.27
   },
   {
    "rank": 10,
@@ -173,12 +173,12 @@
   {
    "rank": 12,
    "title": "悬案",
-   "value": 3046.9
+   "value": 3046.91
   },
   {
    "rank": 13,
    "title": "剥茧",
-   "value": 3034.58
+   "value": 3034.59
   },
   {
    "rank": 14,
@@ -188,32 +188,32 @@
   {
    "rank": 15,
    "title": "无可替代",
-   "value": 2982.04
+   "value": 2982.06
   },
   {
    "rank": 16,
    "title": "入青云",
-   "value": 2979.94
+   "value": 2979.95
   },
   {
    "rank": 17,
    "title": "暗河传",
-   "value": 2959.62
+   "value": 2959.63
   },
   {
    "rank": 18,
    "title": "千香",
-   "value": 2958.58
+   "value": 2958.59
   },
   {
    "rank": 19,
    "title": "我的山与海",
-   "value": 2938.33
+   "value": 2938.35
   },
   {
    "rank": 20,
    "title": "正义女神",
-   "value": 2895.76
+   "value": 2895.77
   }
  ],
  "samples": [
@@ -7808,9 +7808,17 @@
    "weekValue": 4320.89,
    "yearRank": 2,
    "yearValue": 5157.1
+  },
+  {
+   "date": "2026-11-06",
+   "hm": "23:00",
+   "weekRank": 1,
+   "weekValue": 4324.01,
+   "yearRank": 2,
+   "yearValue": 5157.39
   }
  ],
- "fetchedAt": "2026-11-06T14:30:28.613Z",
- "lastRun": "2026-11-06T14:33:37.472Z",
+ "fetchedAt": "2026-11-06T15:00:28.253Z",
+ "lastRun": "2026-11-06T15:00:28.253Z",
  "count": 20
 }
